@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0042",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: 2 weeks ago; # 企业知识库 RAG 项目测试样本表 ... | rag / matched  | 命中事假条款  | `reference_text`、`chunk_strategy`  | 是  | PDF / txt 均可能命中 ... I001  | txt Loader  | `scripts/test_document_loader.py`  | 读取 knowledge.txt 成 1 个 Document  | `file_type=txt`  | 是  | 单文件 txt ... A001  | 查询索引状态  | ",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

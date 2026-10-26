@@ -1,0 +1,27 @@
+{
+  "candidate_id": "github-0531",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：LLM Agent Framework in ComfyUI includes MCP sever, Omost,GPT-sovits, ChatTTS,GOT-OCR2.0, and FLUX prompt nodes,access to Feishu,discord,and adapts to all llms with similar openai / aisuite interfaces, such as o1,ollama, gemini, grok, qwen, GLM, deepseek, kimi,doubao. Adapted to local llms, vlm, gguf",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/github/heshengtao__comfyui_LLM_party.json"
+  ],
+  "deep_verified": false
+}

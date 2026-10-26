@@ -1,0 +1,8 @@
+# Artifact resources only. Paths are relative to this file; no credentials.
+storage_root: ./data/indexes
+knowledge_base_id: demo
+max_documents: 1000
+max_chunks: 10000
+max_file_bytes: 16777216
+max_bundle_bytes: 67108864
+max_manifest_bytes: 65536

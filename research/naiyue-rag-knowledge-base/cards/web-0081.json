@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0081",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Published: 8 months ago; 三张手机界面示意图并排展示：左图为 FAQ 精确问答页面，右侧有蓝色按钮和底部操作按钮；中图为基于大模型和知识图谱的 GraphRAG 问答页面，显示较长的正文段落与引用/定位信息；右图为另一种问答结果页面，顶部蓝色标题条，正文为长文本，底部有蓝色按钮。 ... 医生在小程序提问一个中文/英文问题后，无论是否有可匹配的 FAQ 答案，均会在知识库中定位至较为相关的多个段落进行原文展示，国际指南优先级更高。",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web12.json"
+  ],
+  "deep_verified": false
+}

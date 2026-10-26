@@ -1,0 +1,15 @@
+project_root: /Users/zmw/naiyue-rag
+knowledge_base_root: knowledge
+key_env: NAIYUE_RAG_ZHIPU_API_KEY
+chunk_size: 1000
+chunk_overlap: 300
+rerank_backend: llm
+model_settings: llm-rerank.example.yaml
+storage: storage.example.yaml
+encoding: encoding.example.yaml
+sparse: sparse.example.yaml
+chroma: chroma.example.yaml
+bm25: bm25.example.yaml
+hybrid: hybrid.example.yaml
+rerank: rerank.example.yaml
+evidence: evidence.example.yaml

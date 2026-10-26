@@ -1,0 +1,2 @@
+# Chroma slice; original experiment environment retained.
+chromadb==1.5.9

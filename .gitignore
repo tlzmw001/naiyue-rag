@@ -1,0 +1,20 @@
+.venv/
+.env
+.env.*
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+data/
+logs/
+*.db
+*.sqlite*
+.venv-lightrag/
+
+# Third-party source checkouts are references, not this project's source.
+/research/naiyue-rag-knowledge-base/clones/
+# Raw third-party pages and source captures remain local research evidence.
+/research/naiyue-rag-knowledge-base/raw/
+
+# Only the empty credential template may be versioned.
+!/.env.example

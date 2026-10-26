@@ -1,0 +1,27 @@
+{
+  "candidate_id": "github-0368",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：由 Dify API 驱动的前沿桌面智能对话应用，具备企业级人工智能对话能力。这款应用拥有主题定制、知识库管理以及多场景应用等显著功能。​ 如今，我们进行了重大升级，新增对 OpenAI 格式输出的支持。这意味着，它能够与市面上所有遵循 OpenAI 格式的人工智能模型无缝对接。不管您使用的是知名供应商的模型，比如提供可靠且可扩展云端解决方案的 Azure OpenAI，还是以先进自然语言处理能力闻名的 Cohere，又或是专注于人工智能安全与伦理的 Anthropic 等众多供应商的模型，我们的应用都能满足需求。这种拓展后的兼容性，确保您可以在我们直观且功能丰富的桌面应用中，充分发挥您心仪的",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/github/bitshift-byte__Dify-WebUI.json"
+  ],
+  "deep_verified": false
+}

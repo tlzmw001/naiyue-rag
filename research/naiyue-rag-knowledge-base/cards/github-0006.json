@@ -1,0 +1,27 @@
+{
+  "candidate_id": "github-0006",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：拼好RAG：手搓并融合了GraphRAG、LightRAG、Neo4j-llm-graph-builder进行知识图谱构建以及搜索；整合DeepSearch技术实现私域RAG的推理；自制针对GraphRAG的评估框架| Integrate GraphRAG, LightRAG, and Neo4j-llm-graph-builder for knowledge graph construction and search. Combine DeepSearch for private RAG reasoning. Create a custom evaluation framework for ",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/github/1517005260__graph-rag-agent.json"
+  ],
+  "deep_verified": false
+}

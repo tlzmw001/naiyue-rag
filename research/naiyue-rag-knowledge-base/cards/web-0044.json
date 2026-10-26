@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0044",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: today; 创建 Multi-Agent 模式应用，单击知识管理，导入文档。 ... 复杂表格数据查询：需要结合 Text2SQL 、SQLExecutor 和计算工具处理复杂的表格数据指标查询。 ... 知识库检索 Agent 是基于 Agentic RAG 方式的自主智能体，能够根据任务需求自主规划并拆解检索过程，支持多次调用检索工具和计算工具组合来处理复杂任务。",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

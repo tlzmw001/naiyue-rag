@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0056",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] 图 3-1: RAG 聊天机器人架构。图中按模块分区展示系统流程与依赖关系：左侧为 Cloudflare Workers Edge（worker.ts 主逻辑工作流、KV 存储、Vectorize 向量数据库、retriever.ts 文档检索、prompt.ts 提示词构建）；上方为用户交互层（用户、widget.js 前端界面、Hugo 网站 mygmsys.to）；中上为知识处理层（Markdown 文档、英文内容 content/en/、中文内容 content/zh/、md.ts Markdown 解析、chunk.ts 文档分块、fast-ingest",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

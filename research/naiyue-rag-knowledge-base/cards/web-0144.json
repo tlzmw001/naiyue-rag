@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0144",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Published: last year; Add the relevant document and user query to a prompt and send it to gpt-3.5-turbo via the OpenAI platform. ... Activity callout box titled “Activity 11.1” with text: “In this part of the chapter, we’ll go through the steps required to build a basic example of a R",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web02.json"
+  ],
+  "deep_verified": false
+}

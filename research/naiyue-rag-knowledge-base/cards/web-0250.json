@@ -1,0 +1,48 @@
+{
+  "candidate_id": "web-0250",
+  "problem_solved": "托管知识源检索并可选生成回答，提供activity和references",
+  "solution": {
+    "tools": [
+      "Azure AI Search",
+      "SDK/HTTP/MCP"
+    ],
+    "workflow": [
+      "配置知识源/索引→鉴权",
+      "retrieve→提取内容或版本支持的答案合成→activity/references"
+    ],
+    "key_technologies": [
+      "结构化证据",
+      "来源引用"
+    ],
+    "core_mechanism": "托管知识源检索并可选生成回答，提供activity和references；实际接线见deep/hosted-services.md",
+    "outputs": [
+      "检索证据与引用；问答能力依各入口而定"
+    ],
+    "tradeoffs": "本轮只读源码/文档，未运行；模型成本、版本定位、用户Markdown质量与业务权威性未验证",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "知识库摄取、检索和Agent消费证据",
+  "difference": "默认输入/供应商/业务角色与本项目的Markdown需求方案旧用例契约不同",
+  "usability_assessment": {
+    "verdict": "borrow_idea",
+    "rationale": "借鉴具体调用链与契约，是否采用待本项目样本和实验确认"
+  },
+  "info_completeness": "high",
+  "terminal_state": "partial_borrow",
+  "state_rationale": "已选并完成核心源码或一手API文档静态深验，未验证runtime/live",
+  "evidence_refs": [
+    "raw/web/web06.json",
+    "raw/web/preselection/azure-retrieve.html",
+    "raw/web/hosted-service-evidence.web-response.txt",
+    "deep/hosted-services.md"
+  ],
+  "deep_verified": true,
+  "delivery_assessment": {
+    "delivery_model": "hosted_api",
+    "implementation_visibility": "closed_service",
+    "upstream_access_method": "供应商官方API",
+    "platform_policy_status": "official",
+    "live_verified": false
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0062",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Published: 2.3 years ago; Crawled: 2.3 years ago; 此外，我还会为其添加本地知识库、搜索引擎、Function Calling 和 Google 工具箱，测试模型在多种工具情境下自动选择并正确调用合适工具的能力。 ... 本地知识库 (使用 PS5 用户手册文档构建的知识库) ... 文件内容是指环王故事的一部分，模型首先编写代码并读取了文件内容，最后编写代码制作词云并显示。 ... 让模型搜索我的 Gmail 邮箱，查找关于 Google 开发者比赛的邮件，模型调用 Google 工具箱中的邮件搜索工具之后，总结邮",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

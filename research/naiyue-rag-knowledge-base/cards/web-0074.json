@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0074",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: 2 months ago; GraphRAG 索引包是一个数据管道和转换套件，旨在利用 LLM 从非结构化文本中提取有意义的结构化数据。 ... 有关设置开发环境的详细信息，请参阅 需求 部分，请参阅 入门。要配置 GraphRAG，请参阅 配置 文档。 ...   * 要了解索引库的底层概念和执行模型，请参阅 架构文档\n\nGraphRAG\n\n概述\n\n# GraphRAG 索引 🤖\n\nGraphRAG 索引包是一个数据管道和转换套件，旨在利用 LLM 从非结构化文本中提取有意义的结构化数据。\n\n索引管道是可配置的。它们由工作流、标准和自定义步骤、",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web12.json"
+  ],
+  "deep_verified": false
+}

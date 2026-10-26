@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0159",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: 2 months ago; A semantic markdown document loader and chunker for RAG pipelines. ...   * Semantic chunking: Respects markdown structure (headers, paragraphs) ...   * Metadata tracking: Preserves source path and chunk positions\n\n## Crate markdown_rag\n\n## markdown_rag0.1.0\n\n  *",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web03.json"
+  ],
+  "deep_verified": false
+}

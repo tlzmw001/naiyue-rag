@@ -1,0 +1,163 @@
+{
+  "dataset_id": "naiyue-rag-mock-v1",
+  "synthetic": true,
+  "provenance": "Structure inspired by user photographs; all business content reconstructed by assistant.",
+  "revision": "mock-v1-initial",
+  "index_root": "knowledge",
+  "discussion_only_files": [
+    "README.md",
+    "manifest.json",
+    "tasks.json"
+  ],
+  "quality_status": "no_retrieval_or_service_experiment",
+  "documents": [
+    {
+      "document_id": "MOCK-L0-001",
+      "semantic_level": "L0",
+      "directory_level": "L0",
+      "role": "system",
+      "path": "knowledge/L0/L0_demo_system.md",
+      "line_count": 30,
+      "sha256": "c864e2b2c88601a743d92ee38fd14dbfd1ed9adc97e2f7312e6ae945db63a59a"
+    },
+    {
+      "document_id": "MOCK-L1-001",
+      "semantic_level": "L1",
+      "directory_level": "L1",
+      "role": "module",
+      "path": "knowledge/L1/Dispatcher/L1_dispatch.md",
+      "line_count": 36,
+      "sha256": "0cbcae6819b5704ae2617c90d61ec35afdaf6e4b96e3492843a6aa21e5ecd745"
+    },
+    {
+      "document_id": "MOCK-L1-002",
+      "semantic_level": "L1",
+      "directory_level": "L1",
+      "role": "module",
+      "path": "knowledge/L1/Scoring/L1_calibration.md",
+      "line_count": 25,
+      "sha256": "90f07afe20249e088b6e56c503cf20dbac8a1a6247a26573cf5d3276775f34c6"
+    },
+    {
+      "document_id": "MOCK-L1-003",
+      "semantic_level": "L1",
+      "directory_level": "L1",
+      "role": "module",
+      "path": "knowledge/L1/Predictor/L1_prediction.md",
+      "line_count": 20,
+      "sha256": "d512546c5205b34eb6223392775e0640a27d57cdee5e33f745fc8a520680c5ba"
+    },
+    {
+      "document_id": "MOCK-L2-001",
+      "semantic_level": "L2",
+      "directory_level": "L2",
+      "role": "historical_requirement",
+      "path": "knowledge/L2/L2_REQ_001_joint_prediction.md",
+      "line_count": 44,
+      "sha256": "3d55d8112f2cb63a85dc5c4c759b7fb39a7e36f0b5347c7128ac5c91d4542999"
+    },
+    {
+      "document_id": "MOCK-CASE-001",
+      "semantic_level": "L2",
+      "directory_level": "L2",
+      "role": "historical_test_cases",
+      "path": "knowledge/L2/L2_REQ_001_joint_prediction_测试用例.md",
+      "line_count": 33,
+      "sha256": "90541888927959f11f26f3a616577111c66eed380efa0e0a431483eb974cbf3c"
+    },
+    {
+      "document_id": "MOCK-L2-002",
+      "semantic_level": "L2",
+      "directory_level": "L2",
+      "role": "historical_requirement",
+      "path": "knowledge/L2/L2_REQ_002_strategy_split.md",
+      "line_count": 28,
+      "sha256": "212def7fe371e4b299c2b7d3d19e5c805834199d987010267777636ca8f3595f"
+    },
+    {
+      "document_id": "MOCK-CASE-002",
+      "semantic_level": "L2",
+      "directory_level": "L2",
+      "role": "historical_test_cases",
+      "path": "knowledge/L2/L2_REQ_002_strategy_split_测试用例.md",
+      "line_count": 27,
+      "sha256": "7b3a901dfeee760add0484fc64af159c1ead594ce057e914de343375f8f1efc0"
+    },
+    {
+      "document_id": "MOCK-L2-003",
+      "semantic_level": "L2",
+      "directory_level": "L2",
+      "role": "historical_requirement",
+      "path": "knowledge/L2/L2_REQ_003_output_names.md",
+      "line_count": 32,
+      "sha256": "38fce1a12faf6f8659884e259ff56e0eeb2089b5214620321b4b466d2631c2b6"
+    },
+    {
+      "document_id": "MOCK-TASK-004",
+      "semantic_level": "L2",
+      "directory_level": "L2",
+      "role": "current_task",
+      "path": "knowledge/L2/L2_REQ_004_combined_strategy.md",
+      "line_count": 48,
+      "sha256": "1604867a8b88eb2e63ad25a8721910e3670688728be982b99fb754bf9e34afce"
+    },
+    {
+      "document_id": "MOCK-CASE-L1-001",
+      "semantic_level": "L1",
+      "directory_level": "L2",
+      "role": "historical_test_cases",
+      "path": "knowledge/L2/L1_dispatch_测试用例.md",
+      "line_count": 17,
+      "sha256": "54601c23cdc3beabfed61d614d60f206e671795c0c5b0694b038f65dc7e3b89a"
+    },
+    {
+      "document_id": "MOCK-NOISE-005",
+      "semantic_level": "L2",
+      "directory_level": "L2",
+      "role": "distractor",
+      "path": "knowledge/L2/L2_REQ_005_storage_rotation.md",
+      "line_count": 24,
+      "sha256": "5d526378f105ed85fb428dfc4fb65fd1b00faa1f2b4856f7888565f40de22bda"
+    }
+  ],
+  "expected_pairs": [
+    {
+      "source_document_id": "MOCK-L2-001",
+      "test_document_id": "MOCK-CASE-001",
+      "basis": "filename_pair"
+    },
+    {
+      "source_document_id": "MOCK-L2-002",
+      "test_document_id": "MOCK-CASE-002",
+      "basis": "filename_pair"
+    },
+    {
+      "source_document_id": "MOCK-L1-001",
+      "test_document_id": "MOCK-CASE-L1-001",
+      "basis": "filename_pair"
+    }
+  ],
+  "requirements_without_case_file": [
+    "MOCK-L2-003",
+    "MOCK-TASK-004"
+  ],
+  "intentional_anomalies": [
+    {
+      "document_id": "MOCK-L2-001",
+      "kind": "stale_header_line_range",
+      "declared_range": [
+        999,
+        1005
+      ],
+      "target_heading": "### 2.1 原始计算公式"
+    },
+    {
+      "document_id": "MOCK-CASE-L1-001",
+      "kind": "L1_case_under_L2_directory"
+    },
+    {
+      "document_id": "MOCK-CASE-001",
+      "kind": "long_physical_table_row_and_partial_case_reference"
+    }
+  ]
+}

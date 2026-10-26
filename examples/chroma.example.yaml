@@ -1,0 +1,3 @@
+# Application settings. Native SDK settings may coexist with model keys in .env.
+collection_name: knowledge_hub
+batch_size: 100

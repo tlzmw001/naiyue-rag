@@ -1,0 +1,19 @@
+{
+  "label_source": "assistant_constructed",
+  "review_status": "not_reviewed_by_user",
+  "unit": "exact_current_chunk_selected_by_unique_source_and_body_anchor",
+  "questions": [
+    {"id":"Q1","query":"新需求移除折扣开关后，需要参考哪些历史需求和用例，回归哪些保留行为？","required":[
+      {"source_path":"L1_module.md","anchor":"基础金额使用原始单价乘以数量"},
+      {"source_path":"L2_previous.md","anchor":"discount_enabled=0 时不使用折扣"},
+      {"source_path":"L2_previous_测试用例.md","anchor":"| TC-01 |"}
+    ]},
+    {"id":"Q2","query":"历史用例中单价10、数量2，discount_enabled=1 时，预期基础金额和实付各是多少？","required":[
+      {"source_path":"L2_previous_测试用例.md","anchor":"| TC-02 |"}
+    ]},
+    {"id":"Q3","query":"日志按什么周期归档？","required":[
+      {"source_path":"L2_other.md","anchor":"日志按天归档"}
+    ]},
+    {"id":"Q4","query":"现在人民币兑换美元的实时汇率是多少？","required":[],"unanswerable":true}
+  ]
+}

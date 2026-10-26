@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0077",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: last week; 你可以在 GraphRAG 存储库的 python/graphrag/graphrag/model 文件夹中找到这些定义。 ... 常见用例是将 `CHUNK_BY_COLUMNS` 设置为 `id`，以便文档和 TextUnit 之间存在一对多关系，而不是多对多关系。 ...   * `Node` - 该表包含嵌入和聚类的实体和文档的渲染知识图谱视图的布局信息。\n\n# 索引数据流\n\n## 知识图谱相关知识模型\n\n知识模型是符合我们数据模型定义的数据输出规范。你可以在 GraphRAG 存储库的 python/graphra",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web12.json"
+  ],
+  "deep_verified": false
+}

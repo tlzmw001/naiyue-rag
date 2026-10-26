@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0067",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: 7 months ago; 测试用例（Test case）已经广为人知，没有歧义，但就文字表面而言，测试用例類似是属于用例，就像红富士苹果属于苹果一样，所以为了更容易区分，需求用例是个更清晰的称呼。}- ... 一个摘要用例能够简单插入电子表格的单元格中并且用表格中的其它列记述业务优先级，技术复杂度，版本号等。 ... 一个完整正式或者复杂的用例是一个以包含了不同部分的长模板为基础的正规的文档。",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

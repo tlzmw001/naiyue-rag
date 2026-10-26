@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0371",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Published: 2 months ago; One concept per file, linked to each other, with an index.md for  progressive disclosure. ... I wanted to know whether it actually fixes anything, so I built a test corpus  and measured. ... \\- Corpus: 60 markdown files of fake-but-realistic company docs (wiki",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web10.json"
+  ],
+  "deep_verified": false
+}

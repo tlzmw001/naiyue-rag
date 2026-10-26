@@ -1,0 +1,7 @@
+model_id: cross-encoder/mmarco-mMiniLMv2-L12-H384-v1
+model_revision: 1427fd652930e4ba29e8149678df786c240d8825
+model_path: ./data/models/mmarco-mMiniLMv2-L12-H384-v1
+device: cpu
+batch_size: 4
+max_pair_tokens: 512
+max_model_bytes: 1000000000

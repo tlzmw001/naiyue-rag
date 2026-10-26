@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0050",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: yesterday; 知识库检索 Agent 通过 Agentic RAG 方式自主规划并拆解知识库检索任务，支持通过多次调用检索工具和计算工具组合，为用户提供准确的回答。 ... 文档筛选后回答  | 在多个类似文件中，基于时间、地区或类别筛选最相关文档后再生成答案。复杂表格查询  | 结合 Text2SQL 、SQLExecutor 与 Code Interpreter 执行复杂数据分析或指标计算。 ... 可以在对话窗口中测试知识库检索 Agent 的效果表现。",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

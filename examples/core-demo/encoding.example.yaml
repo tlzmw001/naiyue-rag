@@ -1,0 +1,23 @@
+embedding:
+  provider: openai_compatible
+  base_url: https://open.bigmodel.cn/api/paas/v4/
+  model: embedding-3
+  expected_dimensions: 2048
+  request_dimensions: null
+  model_revision: null
+  allowed_response_models:
+  - embedding-3
+representation:
+  document_text_mode: labeled_case
+  text_layout: contexts_then_view
+  document_prefix: ''
+  query_prefix: ''
+runtime:
+  batch_size: 32
+  max_inputs: 1000
+  max_input_utf8_bytes: 32000
+  max_batch_input_utf8_bytes: 128000
+  max_requests: 4
+  timeout_seconds: 30
+  deadline_seconds: 60
+  max_response_bytes: 4194304

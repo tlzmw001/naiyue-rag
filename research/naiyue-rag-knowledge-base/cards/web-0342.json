@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0342",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Published: 7 months ago; The Model Context Protocol (MCP) standardizes how AI agents discover and invoke external tools, with over 10,000 active servers and 97 million monthly SDK downloads as of early 2026. ... We organize production failure modes into five design dimensions (server ",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web09.json"
+  ],
+  "deep_verified": false
+}

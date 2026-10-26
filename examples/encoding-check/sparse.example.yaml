@@ -1,0 +1,5 @@
+min_chinese_term_length: 2
+lowercase: true
+cache_dir: ./cache
+max_terms_per_input: 10000
+max_resource_bytes: 33554432

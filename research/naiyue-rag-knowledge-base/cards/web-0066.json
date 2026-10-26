@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0066",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Published: 5 months ago; Crawled: 5 months ago; 只需用自然语言描述你的测试需求，比如“帮我做一个批量整理测试缺陷的工具”“创建一个简单的接口测试数据生成Skill”，它就能自动生成符合官方规范的SKILL.md文件、基础代码脚本和标准文件夹结构，无需手动调整归档格式。 ... 支持docx、xlsx、pptx、pdf等常见格式的文档处理，比如批量整理测试用例、汇总缺陷数据生成表格、格式化测试报告，能有效解决测试中文档整理繁琐、耗时的问题。",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

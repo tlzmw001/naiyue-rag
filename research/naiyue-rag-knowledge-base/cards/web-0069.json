@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0069",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: 2 months ago; GraphRAG 流程包括从原始文本中提取知识图谱，构建社区层次结构，生成这些社区的摘要，然后在执行基于 RAG 的任务时利用这些结构。 ...   * 当被要求整体理解大型数据集甚至单个大型文档中的总结语义概念时，基线 RAG 的表现不佳。 ... 微软研究院的新方法 GraphRAG 基于输入语料库创建知识图谱。\n\nGraphRAG\n\n欢迎\n\n目录\n\n  * 开始使用 GraphRAG 🚀\n  * GraphRAG 与基线 RAG 🔍\n  * GraphRAG 流程 🤖\n    * 索引\n    * 查询\n    ",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web12.json"
+  ],
+  "deep_verified": false
+}

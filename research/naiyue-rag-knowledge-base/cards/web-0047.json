@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0047",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: last week; 按 RAG 各阶段诊断问题并针对性改进，系统性提升检索与回答质量 ... 建立索引：文档的解析、切片与向量化 ... 准备至少 100 条测试用例，每条包含一个问题和对应的预期结果。 ... 检查知识库是否覆盖了评测用例涉及的主题，缺失的内容需要及时补充。 ...   * 优先使用 Markdown 格式；PDF/DOCX 等格式建议先转换为 Markdown 再导入",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

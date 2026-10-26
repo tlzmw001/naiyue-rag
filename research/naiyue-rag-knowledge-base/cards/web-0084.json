@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0084",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: 10 months ago; 1980年代后期，格罗宁根大学和特文特大学联合启动了一个名为知识图谱的项目。 ... 在知识图谱发展初期，知识图谱主要借助百科类网站等结构化数据源，提取本体和模式信息，加入到知识库的自顶向下方式构建数据库。 ... 另外，谷歌的Knowledge Vault从全网范围内抽取结构化的数据信息, 并根据某一数据信息在整个抽取过程中抽取频率对该数据信息的可信度进行评分, 然后利用从可信知识库Freebase中的先验知识对已评分的可信度信息进行修正， 这一方法有效降低对数据信息正误判断的不确定性, 提高知识图谱中知识的质量。",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web12.json"
+  ],
+  "deep_verified": false
+}

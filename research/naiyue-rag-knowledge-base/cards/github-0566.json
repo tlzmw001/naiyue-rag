@@ -1,0 +1,51 @@
+{
+  "candidate_id": "github-0566",
+  "problem_solved": "固定PDF摄取和混合检索的模块化MCP示例",
+  "solution": {
+    "tools": [
+      "Python",
+      "Chroma",
+      "BM25",
+      "MCP",
+      "Ragas"
+    ],
+    "workflow": [
+      "配置→PDF解析→切分增强→向量和BM25存储",
+      "查询→双路召回→RRF→可选重排→引用MCP结果"
+    ],
+    "key_technologies": [
+      "结构化证据",
+      "来源引用"
+    ],
+    "core_mechanism": "固定PDF摄取和混合检索的模块化MCP示例；实际接线见deep/modular-rag.md",
+    "outputs": [
+      "检索证据与引用；问答能力依各入口而定"
+    ],
+    "tradeoffs": "本轮只读源码/文档，未运行；模型成本、版本定位、用户Markdown质量与业务权威性未验证",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "知识库摄取、检索和Agent消费证据",
+  "difference": "默认输入/供应商/业务角色与本项目的Markdown需求方案旧用例契约不同",
+  "usability_assessment": {
+    "verdict": "borrow_idea",
+    "rationale": "借鉴具体调用链与契约，是否采用待本项目样本和实验确认"
+  },
+  "info_completeness": "high",
+  "terminal_state": "partial_borrow",
+  "state_rationale": "已选并完成核心源码或一手API文档静态深验，未验证runtime/live",
+  "evidence_refs": [
+    "raw/github/jerry-ai-dev__MODULAR-RAG-MCP-SERVER.json",
+    "clones/modular-rag/src/ingestion/pipeline.py",
+    "clones/modular-rag/src/mcp_server/tools/query_knowledge_hub.py",
+    "deep/modular-rag.md"
+  ],
+  "deep_verified": true,
+  "delivery_assessment": {
+    "delivery_model": "model_or_mcp",
+    "implementation_visibility": "open_backend",
+    "upstream_access_method": "模型/存储API",
+    "platform_policy_status": "unknown",
+    "live_verified": false
+  }
+}

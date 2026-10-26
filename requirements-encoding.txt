@@ -1,0 +1,4 @@
+# Incremental encoding/configuration dependencies; existing versions remain unchanged.
+openai==2.54.0
+jiter==0.17.0
+python-dotenv==1.2.4

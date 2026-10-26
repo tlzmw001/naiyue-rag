@@ -1,0 +1,5 @@
+# A starting experiment configuration, not an optimality claim.
+enabled: true
+top_k: 5
+max_candidates: 20
+max_input_characters: 64000

@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0057",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Published: 6 months ago; 知识库 / RAG：昨天还能答对政策，今天改了 prompt 或知识库后，又漏关键条件。代码 Copilot AI：改一个功能时，顺手把之前修好的老 bug 又带回来了；切换窗口后，之前的上下文没有了，又开始乱改文件。 ... 自己让AI做了测试，最关键的几个数字： ... 如果你现在已经在用 AI 写代码、做知识库、做Agent，这个方向我觉得很值得关注。",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

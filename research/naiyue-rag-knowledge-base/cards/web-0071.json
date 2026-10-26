@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0071",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: yesterday; 文档中心>腾讯云智能体开发平台>操作指南>知识库>知识库设置>知识图谱 GraphRAG ... GraphRAG 是一种将知识图谱（Knowledge Graph）与大语言模型（LLM）深度融合的检索增强生成（RAG）方案，支持从非结构化文档中自动抽取实体、关系与属性，构建可推理、可演进的结构化知识图谱，并在问答过程中，结合图谱关系推理与语义检索，为复杂问题提供更精准的多跳推理答案。\n\n文档中心>腾讯云智能体开发平台>操作指南>知识库>知识库设置>知识图谱 GraphRAG\n\n# 知识图谱 GraphRAG\n\n最近更新时间",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web12.json"
+  ],
+  "deep_verified": false
+}

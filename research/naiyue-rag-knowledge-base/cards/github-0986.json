@@ -1,0 +1,48 @@
+{
+  "candidate_id": "github-0986",
+  "problem_solved": "完整知识库产品：把多种文档摄取为索引，按知识库/文档范围检索，为独立搜索、LLM问答和外部MCP客户端提供证据。",
+  "solution": {
+    "tools": ["Go 1.27后端", "Python SDK", "gomarkdown", "MySQL", "MinIO", "Elasticsearch或Infinity等可选文档引擎", "Kvrocks", "NATS JetStream", "独立Embedding/Chat/Rerank模型适配器"],
+    "workflow": ["upload_documents保存Markdown blob和SQL文档/文件关系，尚不向量化", "async_parse_documents -> ChunkHandler.Parse -> ChunkService.Parse -> StartParseDocuments -> IngestDocuments -> 摄取任务入队", "PipelineExecutor运行File -> Parser -> GeneralChunker -> Extractor -> Tokenizer的DSL，解析、按token预算切分、全文分词、批量Embedding", "processOutput规范化chunk，经indexWriter.Write和engine.InsertChunks持久化", "retrieve -> SearchDatasets检查授权/metadata/doc范围、模型兼容，RetrievalService执行关键词/向量、引擎相关weighted_sum、可选模型重排", "返回chunk来源和分数；独立Chat层生成答案/引用；MCP复用检索服务输出证据JSON"],
+    "key_technologies": ["Markdown AST块", "token预算和可选overlap", "混合检索weighted_sum", "Query=true非对称查询Embedding与cosine", "可选模型重排", "知识库授权及metadata过滤", "任务/Checkpoint/重试/补偿", "HTTP与MCP共享服务"],
+    "core_mechanism": "上传保存blob/SQL；SDK解析经StartParseDocuments入队，PipelineExecutor调用pipe.Run(ctx,inputs,parserConfig)。Tokenizer的DefaultEmbedderResolver由task/embedder.go init真实注入并绑定KB.EmbdID；processOutput和indexWriter.Write调用engine.InsertChunks。SearchDatasets装配模型与受限范围，RetrievalService.Search构建matchText/matchDense/fusion，scoreSearchResult和阈值排序返回证据，ChatPipeline与mcpRetrieval消费结果。",
+    "outputs": ["原文、文档/文件关系和任务记录", "全文tokens与向量chunk索引", "含chunk/document/dataset/分数的检索结果", "可选回答和引用", "MCP chunks/pagination/query_info JSON"],
+    "tradeoffs": "当前main已是Go v1.0.0-rc1路线，README要求Linux x86_64且暂不支持macOS，Docker推荐4CPU/16GB/50GB，依赖多种基础服务。整套产品与Python逐切片学习成本不同。use_kg在默认检索API明确warning跳过，chat另有KG，不代表所有出口均实现。未运行服务，延迟、费用和业务质量未知。",
+    "observed_pitfalls": [{"problem": "历史Markdown解析将货币美元符号解释为MathJax并丢中间正文", "trigger": "CommonExtensions启用MathJax，远距美元符号之间内容进入未消费的Math节点", "impact": "回归注释记录13.8k字符账单文档变约1.4k；本轮未复现", "mitigation": "当前代码关闭MathJax并有保留正文回归断言；本轮未运行", "evidence_ref": "clones/ragflow/internal/parser/parser/markdown_parser_test.go:282-308; clones/ragflow/internal/parser/parser/markdown_parser.go:149-172"}],
+    "unresolved_problems": [{"problem": "本轮Markdown链未证明原文行号与版本定位", "why_unresolved": "输出AST text/type/ck_type，未看到line_start/line_end；positions帮助函数针对PDF框和表格范围，不能据此证明Markdown定位", "evidence_ref": "clones/ragflow/internal/parser/parser/markdown_parser.go:99-135,395-453; clones/ragflow/internal/ingestion/task/indexdoc/position.go:37-76"}, {"problem": "通用检索/问答未证明当前需求相对旧用例的业务权威性", "why_unresolved": "metadata可人工定义并过滤；本轮标准链按相关性召回/重排构建prompt，没有本项目文档种类/版本权威性裁决。需自有规则及测试，不推广到全产品不可能实现", "evidence_ref": "clones/ragflow/docs/guides/dataset/metadata_management.md:20-42; clones/ragflow/internal/service/dataset/search.go:232-348; clones/ragflow/internal/service/chat_pipeline.go:912-1178"}]
+  },
+  "overlap": "Markdown知识库、索引、范围与metadata、混合检索、证据、独立问答和MCP；完整产品对照。",
+  "difference": "多格式、Agent与产品管理范围更广；Go基础设施较重，仍需自有业务版本、权威性、原文证据和固定评测集。",
+  "delivery_assessment": {"delivery_model": "open_source_self_hosted", "implementation_visibility": "open_backend", "upstream_access_method": "部署Go和数据库/对象存储/索引/队列，以HTTP或MCP检索，模型独立provider配置", "platform_policy_status": "official", "live_verified": false},
+  "usability_assessment": {
+    "verdict": "borrow_idea",
+    "rationale": "静态实现接线可借鉴知识库工程：范围、任务、模型类型、检索/Chat分离及MCP复用；本项目Python教学路线暂无直接采用整套产品的证据，仍需Linux部署与业务样本验证。"
+  },
+  "info_completeness": "high",
+  "terminal_state": "partial_borrow",
+  "state_rationale": "已选并clone读核心摄取/查询/模型/Chat/MCP源码；深验指静态机制核验，本机运行与真实服务未验证。",
+  "borrow_points": ["上传与解析任务分开可观察", "范围/metadata过滤先于检索", "Embedding/Chat/Rerank独立配置并真实注入", "检索与问答分开，MCP复用服务", "解析内容守恒回归样本及索引失败补偿"],
+  "evidence_refs": [
+    "raw/github/infiniflow__ragflow.json",
+    "raw/clone-snapshots.json",
+    "deep/ragflow.md",
+    "clones/ragflow/README.md",
+    "clones/ragflow/LICENSE",
+    "clones/ragflow/go.mod",
+    "clones/ragflow/pyproject.toml",
+    "clones/ragflow/internal/service/document/document_upload.go",
+    "clones/ragflow/internal/service/chunk/chunk.go",
+    "clones/ragflow/internal/service/document/document_parse.go",
+    "clones/ragflow/internal/ingestion/task/pipeline_executor.go",
+    "clones/ragflow/internal/ingestion/task/embedder.go",
+    "clones/ragflow/internal/ingestion/component/tokenizer.go",
+    "clones/ragflow/internal/parser/parser/markdown_parser.go",
+    "clones/ragflow/internal/ingestion/component/chunker/general.go",
+    "clones/ragflow/internal/service/dataset/search.go",
+    "clones/ragflow/internal/service/nlp/retrieval.go",
+    "clones/ragflow/internal/service/chat_pipeline.go",
+    "clones/ragflow/internal/handler/mcp_retrieval.go",
+    "clones/ragflow/docs/guides/dataset/metadata_management.md"
+  ],
+  "deep_verified": true
+}

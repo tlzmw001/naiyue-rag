@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0040",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: last month;   * 测试即文档：测试用例本身就是最准确的行为规范，新加入的开发者可通过阅读测试快速理解各模块功能。 ... - 验证 Markdown 标题层级提取 ...     * 准备测试文档（PDF 文件，包含文本、图片、表格等多种元素） ...     * 基于已摄取的知识库，准备一组测试查询（包含不同难度与类型） ... 目标：验证已设计的评估体系（见 3.3.4 评估框架抽象）是否正确实现，并能有效评估 RAG 系统的召回与生成质量。 ...     │   │   ├── test_get_document_summa",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

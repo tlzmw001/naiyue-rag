@@ -1,0 +1,27 @@
+{
+  "candidate_id": "github-0914",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：标书匠 BidCraft · 对话式标书编制系统：AI 智能编制技术标，支持招标文件解析、标段选择、标书编写、知识库提炼与学习对话式改稿。LLM-Wiki 路线，基于LangGraph实现。Open-source AI agent for construction tender & bid documents.",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/github/zeronezer__bidcraft.json"
+  ],
+  "deep_verified": false
+}

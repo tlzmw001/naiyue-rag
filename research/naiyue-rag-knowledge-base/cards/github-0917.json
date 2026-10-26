@@ -1,0 +1,27 @@
+{
+  "candidate_id": "github-0917",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：白马智扫通项目基于LangChain ReAct Agent打造智能客服系统，融合RAG知识库检索、多工具调用与动态提示词能力，支持问答咨询、故障解答及个性化报告生成。项目采用模块化架构，借助Streamlit实现流式交互界面，以扫地机器人为应用场景，代码易维护、可快速拓展至各类垂直客服领域。",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/github/zhao11122233__KnowledgeBase-RAG-LLM-System-master.json"
+  ],
+  "deep_verified": false
+}

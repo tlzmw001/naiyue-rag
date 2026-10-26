@@ -1,0 +1,27 @@
+{
+  "candidate_id": "github-0189",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：在本项目中模拟健康档案私有知识库构建和检索全流程，通过一份代码实现了同时支持多种大模型（如OpenAI、阿里通义千问等）的RAG（检索增强生成）功能:(1)离线步骤:文档加载->文档切分->向量化->灌入向量数据库；在线步骤:获取用户问题->用户问题向量化->检索向量数据库->将检索结果和用户问题填入prompt模版->用最终的prompt调用LLM->由LLM生成回复",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/github/NanGePlus__RagLangChainTest.json"
+  ],
+  "deep_verified": false
+}

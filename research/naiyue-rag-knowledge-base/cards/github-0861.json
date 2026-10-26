@@ -1,0 +1,27 @@
+{
+  "candidate_id": "github-0861",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：Web scraping framework built for AI applications. Extract clean, structured content from any website with dynamic content handling, markdown conversion, and intelligent crawling capabilities. Perfect for RAG applications and AI training data pipelines. Features async processing, browser management, ",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/github/vishwajeetdabholkar__eGet-Crawler-for-ai.json"
+  ],
+  "deep_verified": false
+}

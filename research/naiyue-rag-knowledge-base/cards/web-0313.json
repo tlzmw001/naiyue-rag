@@ -1,0 +1,48 @@
+{
+  "candidate_id": "web-0313",
+  "problem_solved": "供应商管理文件摄取索引并通过模型工具问答",
+  "solution": {
+    "tools": [
+      "Gemini API",
+      "FileSearchStore"
+    ],
+    "workflow": [
+      "创建store→上传/import→等待索引operation",
+      "Gemini调用file_search→答案及可选file_citation"
+    ],
+    "key_technologies": [
+      "结构化证据",
+      "来源引用"
+    ],
+    "core_mechanism": "供应商管理文件摄取索引并通过模型工具问答；实际接线见deep/hosted-services.md",
+    "outputs": [
+      "检索证据与引用；问答能力依各入口而定"
+    ],
+    "tradeoffs": "本轮只读源码/文档，未运行；模型成本、版本定位、用户Markdown质量与业务权威性未验证",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "知识库摄取、检索和Agent消费证据",
+  "difference": "默认输入/供应商/业务角色与本项目的Markdown需求方案旧用例契约不同",
+  "usability_assessment": {
+    "verdict": "borrow_idea",
+    "rationale": "借鉴具体调用链与契约，是否采用待本项目样本和实验确认"
+  },
+  "info_completeness": "high",
+  "terminal_state": "partial_borrow",
+  "state_rationale": "已选并完成核心源码或一手API文档静态深验，未验证runtime/live",
+  "evidence_refs": [
+    "raw/web/web08.json",
+    "raw/web/preselection/gemini-file-search.html",
+    "raw/web/hosted-service-evidence.web-response.txt",
+    "deep/hosted-services.md"
+  ],
+  "deep_verified": true,
+  "delivery_assessment": {
+    "delivery_model": "hosted_api",
+    "implementation_visibility": "closed_service",
+    "upstream_access_method": "供应商官方API",
+    "platform_policy_status": "official",
+    "live_verified": false
+  }
+}

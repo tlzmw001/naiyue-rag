@@ -1,0 +1,6 @@
+# Spec0008 direct constraints; separate macOS Python 3.12 runtime.
+lightrag-hku==1.5.7
+numpy==2.5.3
+tiktoken==0.14.0
+setuptools==84.0.0
+pytest==9.1.1

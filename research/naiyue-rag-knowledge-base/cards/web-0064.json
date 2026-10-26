@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0064",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: 8 months ago; 与仅依赖静态训练数据的模型不同，RAG能够从数据库、上传文档或网络资源中提取相关文本。 ... RAG还降低了为纳入新数据而重新训练大语言模型的需求，从而节省计算资源与资金成本。 ... RAG可应用于非结构化（通常为文本）、半结构化或结构化数据（例如知识图谱）。这些嵌入向量随后被存储在向量数据库中，以支持高效的文档检索。 ... 例如，代码文件宜以完整函数或类为单位进行分块与向量化；HTML文件应保持<table>标签或base64编码的<img>元素完整；PDF文件也需考虑类似因素。 ... RAG系统通常使用专门",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

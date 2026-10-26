@@ -1,0 +1,6 @@
+dense_top_k: 20
+sparse_top_k: 20
+fusion_top_k: 10
+rrf_k: 60
+bm25_statistics_scope: global
+parallel_retrieval: true

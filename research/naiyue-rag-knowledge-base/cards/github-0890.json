@@ -1,0 +1,27 @@
+{
+  "candidate_id": "github-0890",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：开源私域 AI 营销 SCRM 系统，Martech 获客引流利器！全渠道聚合（抖音/小红书/快手/微信/WhatsApp/TikTok/Telegram）统一收件箱与 CDP 客户管理。🤖核心功能：1. ReAct 自主 AI 智能体（41原子工具/销冠 SOP 自动化编排）；2. 本地知识库 RAG（混合检索/混合粗排）；3. 独家 GEO 模块（生成式大模型引擎优化/AI 搜索占位/内容创作），让 ChatGPT/Perplexity/DeepSeek 优先推荐你的品牌！🔒数据安全：支持 100% 私域自托管部署，数据零出域",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/github/xiaofang142__hivemtk.json"
+  ],
+  "deep_verified": false
+}

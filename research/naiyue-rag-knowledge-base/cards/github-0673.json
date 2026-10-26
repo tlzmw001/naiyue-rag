@@ -1,0 +1,84 @@
+{
+  "candidate_id": "github-0673",
+  "problem_solved": "将叙事文本抽成实体关系和社区报告，给局部实体关联及全语料主题问答建立上下文。",
+  "solution": {
+    "tools": [
+      "Python >=3.11,<3.14",
+      "graphrag / graphrag-* 3.3.0 包",
+      "LiteLLM completion/embedding 适配",
+      "hierarchical Leiden",
+      "配置式表存储和向量存储"
+    ],
+    "workflow": [
+      "输入reader读全文为documents",
+      "配置chunker切text_units",
+      "LLM抽实体关系并gleaning/总结描述",
+      "Leiden社区及LLM社区报告",
+      "写图表和字段向量索引",
+      "Local实体向量入口或Global社区报告MapReduce",
+      "公共query返回答案与context_data"
+    ],
+    "key_technologies": [
+      "实体描述向量召回",
+      "图来源关联",
+      "层级社区",
+      "社区报告MapReduce",
+      "token预算",
+      "配置工厂及callbacks"
+    ],
+    "core_mechanism": "api.build_index → PipelineFactory → load_input_documents → create_base_text_units → extract_graph(GraphExtractor.completion_async) → create_communities(hierarchical_leiden) → create_community_reports → generate_text_embeddings；LocalSearchMixedContext通过实体向量找图邻居与源片段，GlobalSearch以社区报告多批map/reduce。",
+    "outputs": [
+      "documents/text_units/entities/relationships/communities/community_reports表",
+      "字段向量索引",
+      "生成答案及结构化context records"
+    ],
+    "tradeoffs": "相对普通RAG新增抽图/总结/社区报告LLM及多路向量、图维护；公共查询默认含生成。Markdown可改reader文件模式直接读，无须txt转换，但默认txt匹配且未保留行区间。已读增量按title找新增，同名正文更新/删除未在这条链完成。MIT；无真实模型费用/性能结果。README声明维护模式及研究示范性质。",
+    "observed_pitfalls": [],
+    "unresolved_problems": [
+      {
+        "problem": "原始Markdown行号、稳定来源和显式业务版本证据契约",
+        "why_unresolved": "默认text reader只保存basename title、正文hash、日期；所追text_units写入无行区间/标题路径/版本字段。",
+        "evidence_ref": "deep/graphrag.md"
+      },
+      {
+        "problem": "同名文档正文更新与删除同步",
+        "why_unresolved": "get_delta_docs比较title；load_update_documents只用new_inputs；更新文档是旧/增量concat，本轮未找到deleted_inputs消费。",
+        "evidence_ref": "clones/graphrag/packages/graphrag/graphrag/index/update/incremental_index.py"
+      }
+    ]
+  },
+  "overlap": "知识库摄取索引、图关联、检索上下文、模型适配与来源连接可作路线参考。",
+  "difference": "目标主要是叙事数据的图问答/主题发现；没有测试领域需求—方案—用例本体和本项目的Markdown版本/定位契约，未核验内置MCP。",
+  "delivery_assessment": {
+    "delivery_model": "open_source_self_hosted",
+    "implementation_visibility": "open_backend",
+    "upstream_access_method": "独立配置completion/embedding服务，CLI/Python库；仅静态追到LiteLLM接线",
+    "platform_policy_status": "unknown",
+    "live_verified": false
+  },
+  "usability_assessment": {
+    "verdict": "borrow_idea",
+    "rationale": "借鉴图来源关联、配置/预算及Local/Global问题分类；首期采用标准建图的成本与定位更新差距较大，尚无用户语料对照实验。"
+  },
+  "info_completeness": "high",
+  "terminal_state": "partial_borrow",
+  "state_rationale": "已选入且读取摄取、查询、模型与增量核心代码；静态深验，不代表第三方测试或服务通过。",
+  "borrow_points": [
+    "来源片段连接图实体关系",
+    "上下文预算与结构化context records",
+    "模型和workflow配置接线",
+    "Local/Global问题类型区分"
+  ],
+  "evidence_refs": [
+    "deep/graphrag.md",
+    "clones/graphrag/README.md",
+    "clones/graphrag/LICENSE",
+    "clones/graphrag/packages/graphrag/pyproject.toml",
+    "clones/graphrag/packages/graphrag/graphrag/index/workflows/factory.py",
+    "clones/graphrag/packages/graphrag/graphrag/index/workflows/extract_graph.py",
+    "clones/graphrag/packages/graphrag/graphrag/query/structured_search/local_search/mixed_context.py",
+    "clones/graphrag/packages/graphrag/graphrag/query/structured_search/global_search/search.py",
+    "clones/graphrag/packages/graphrag/graphrag/index/update/incremental_index.py"
+  ],
+  "deep_verified": true
+}

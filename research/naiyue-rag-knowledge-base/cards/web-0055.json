@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0055",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Published: 8 months ago; 节，能对复杂命令逐一拆解并解释作用；软件开发时，结合 RAG 以及大语言模型实现自动代码补全；测试用例生成过程中，通过 Agent 调用企业知识库，通过 Prompt 让大模型智能读取和分析产品功能设计文档，自动生成测试用例和测试数据，也能自动执行测试脚本。 ... 在生产制造领域，计划推进高泛化性的 CV 质检模型，聚焦多环节质检需求开展模型预训练，构建覆盖不同材质、环境、缺陷类型的多元化数据集，针对冲压钣金件外观缺陷检测、涂装漆面检测、总装装配规格检测等高精度质量检测场景，设计轻量化微调方案，力求减少低价值、重",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

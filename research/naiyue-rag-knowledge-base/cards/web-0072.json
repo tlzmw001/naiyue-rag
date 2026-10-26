@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0072",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: last week; 为了开始使用 GraphRAG 系统，我们建议尝试 知识图谱加速 (opens in a new tab) 包。 ... 要在OpenAI模式下运行，请确保将`.env`文件中的`GRAPHRAG_API_KEY`的值更新为你的OpenAI API密钥。 ... 详细了解如何利用我们的本地搜索和全局搜索机制从数据中提取有意义的见解的方法，请参阅Query Engine文档，了解更多详细信息。\n\n# 快速入门\n\n## 环境配置\n\nPython 3.10-3.12 (opens in a new tab)\n\n要开始使用 Grap",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web12.json"
+  ],
+  "deep_verified": false
+}

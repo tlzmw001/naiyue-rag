@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0065",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Published: 10 months ago; Crawled: 10 months ago; 借助AI，我开发了许多新功能，还利用Claude和GPT-5 Thinking整理出各种新方案演示文稿，将新的AI系统集成到我们的生产应用中。 ... 我花了大量时间和Claude一起编写了全面的技能文档，涵盖前端开发、后端开发、数据库操作、工作流程管理等领域，其中包含数千行最佳实践、模式示例和案例。 ... 这套结构的巧妙之处在于：技能文档负责“如何编写代码”的指导原则，CLAUDE.md负责“这个特定项目如何运作”的信息——通过职责分离实现了高效管理。 ... ",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

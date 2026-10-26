@@ -1,0 +1,5 @@
+# Incremental wheels only: Python3.12/macOS arm64, not a complete project lock.
+# Install with --no-deps --require-hashes after checking the existing environment.
+openai==2.54.0 --hash=sha256:89089789197ccdb87f173a03145ed1598d00795220c93e96cf712b1cbf5e5f2b
+jiter==0.17.0 --hash=sha256:61aed66ee042b3b49ef85fdf75714234d055d89d8496ac1c6e47f89e7a30d5e4
+python-dotenv==1.2.4 --hash=sha256:42269a8a5b3fd54ffa6f3d84b18abed50064717576b4ecf03dc4a55d8aa04fdc

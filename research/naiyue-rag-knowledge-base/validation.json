@@ -1,0 +1,20 @@
+{
+  "artifact_validation": "PASS",
+  "fetched_at": "2026-10-09T09:43:16.014938+00:00",
+  "schema_objects": {
+    "query-plan": 1,
+    "candidate": 1409,
+    "selection": 1,
+    "scheme-card": 1409,
+    "web-capture": 13
+  },
+  "selected_candidates": 7,
+  "selected_evidence_refs": 58,
+  "markdown_files": 18,
+  "local_links": 34,
+  "errors": [],
+  "source_checkouts": 5,
+  "runtime_tests": "not_run",
+  "live_model_or_service_calls": 0,
+  "note": "schemas/links/commits are research artifact validation, not RAG functionality"
+}

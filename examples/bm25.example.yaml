@@ -1,0 +1,3 @@
+# Tunable starting values; the selected policy is pinned Lucene/NumPy/float64.
+k1: 1.5
+b: 0.75

@@ -1,0 +1,7 @@
+storage_root: ./data/indexes
+knowledge_base_id: core-demo
+max_documents: 100
+max_chunks: 1000
+max_file_bytes: 1048576
+max_bundle_bytes: 33554432
+max_manifest_bytes: 65536

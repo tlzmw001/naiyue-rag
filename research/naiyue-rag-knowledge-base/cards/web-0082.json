@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0082",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Published: 4.8 years ago; 并通过图谱的展示，实现功能测试业务需求的可视化 ... ✓ 多版本的图谱、用例、脚本和数据，可以以图谱为基本单位，进行快速移植 ... 右侧为知识图谱/流程编辑界面示意图：上方是一条弧形流程节点链，节点文字依次可见“当前完成记录”“点击完成”“点击2019”“点击第一个展开”“点击完成”“点击申票”“点击第一个展开”“点击自定义查询”“数据记录”，右侧还有一个圆形“新节点”及围绕它的灰色扇区按钮。",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web12.json"
+  ],
+  "deep_verified": false
+}

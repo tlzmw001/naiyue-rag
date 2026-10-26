@@ -1,0 +1,188 @@
+{
+  "dataset_id": "naiyue-rag-mock-v1",
+  "synthetic": true,
+  "annotation_origin": "assistant_constructed_synthetic_candidates",
+  "user_review_status": "not_reviewed",
+  "purpose": "Walk candidate retrieval paths; not approved gold labels or measured results.",
+  "evidence_units": {
+    "E01": {
+      "document_id": "MOCK-L2-001",
+      "line_start": 19,
+      "line_end": 30,
+      "heading": "### 2.1 原始计算公式",
+      "path": "knowledge/L2/L2_REQ_001_joint_prediction.md",
+      "source_sha256": "3d55d8112f2cb63a85dc5c4c759b7fb39a7e36f0b5347c7128ac5c91d4542999",
+      "evidence_unit": "raw_source_line_range_not_chunk_id"
+    },
+    "E02": {
+      "document_id": "MOCK-L2-001",
+      "line_start": 32,
+      "line_end": 37,
+      "heading": "### 2.2 历史校准",
+      "path": "knowledge/L2/L2_REQ_001_joint_prediction.md",
+      "source_sha256": "3d55d8112f2cb63a85dc5c4c759b7fb39a7e36f0b5347c7128ac5c91d4542999",
+      "evidence_unit": "raw_source_line_range_not_chunk_id"
+    },
+    "E03": {
+      "document_id": "MOCK-CASE-001",
+      "line_start": 19,
+      "line_end": 19,
+      "case_id": "TC-01",
+      "path": "knowledge/L2/L2_REQ_001_joint_prediction_测试用例.md",
+      "source_sha256": "90541888927959f11f26f3a616577111c66eed380efa0e0a431483eb974cbf3c",
+      "evidence_unit": "raw_source_line_range_not_chunk_id"
+    },
+    "E04": {
+      "document_id": "MOCK-CASE-001",
+      "line_start": 31,
+      "line_end": 31,
+      "case_id": "TC-05",
+      "path": "knowledge/L2/L2_REQ_001_joint_prediction_测试用例.md",
+      "source_sha256": "90541888927959f11f26f3a616577111c66eed380efa0e0a431483eb974cbf3c",
+      "evidence_unit": "raw_source_line_range_not_chunk_id"
+    },
+    "E05": {
+      "document_id": "MOCK-L2-002",
+      "line_start": 16,
+      "line_end": 21,
+      "heading": "## 2. 拆分与覆盖",
+      "path": "knowledge/L2/L2_REQ_002_strategy_split.md",
+      "source_sha256": "212def7fe371e4b299c2b7d3d19e5c805834199d987010267777636ca8f3595f",
+      "evidence_unit": "raw_source_line_range_not_chunk_id"
+    },
+    "E06": {
+      "document_id": "MOCK-L2-002",
+      "line_start": 23,
+      "line_end": 28,
+      "heading": "## 3. 校验与异常",
+      "path": "knowledge/L2/L2_REQ_002_strategy_split.md",
+      "source_sha256": "212def7fe371e4b299c2b7d3d19e5c805834199d987010267777636ca8f3595f",
+      "evidence_unit": "raw_source_line_range_not_chunk_id"
+    },
+    "E07": {
+      "document_id": "MOCK-CASE-002",
+      "line_start": 27,
+      "line_end": 27,
+      "case_id": "TC-04",
+      "path": "knowledge/L2/L2_REQ_002_strategy_split_测试用例.md",
+      "source_sha256": "7b3a901dfeee760add0484fc64af159c1ead594ce057e914de343375f8f1efc0",
+      "evidence_unit": "raw_source_line_range_not_chunk_id"
+    },
+    "E08": {
+      "document_id": "MOCK-L2-003",
+      "line_start": 18,
+      "line_end": 27,
+      "heading": "## 2. 字段对照",
+      "path": "knowledge/L2/L2_REQ_003_output_names.md",
+      "source_sha256": "38fce1a12faf6f8659884e259ff56e0eeb2089b5214620321b4b466d2631c2b6",
+      "evidence_unit": "raw_source_line_range_not_chunk_id"
+    },
+    "E09": {
+      "document_id": "MOCK-L1-001",
+      "line_start": 23,
+      "line_end": 30,
+      "heading": "## 2. route",
+      "path": "knowledge/L1/Dispatcher/L1_dispatch.md",
+      "source_sha256": "0cbcae6819b5704ae2617c90d61ec35afdaf6e4b96e3492843a6aa21e5ecd745",
+      "evidence_unit": "raw_source_line_range_not_chunk_id"
+    },
+    "E10": {
+      "document_id": "MOCK-CASE-001",
+      "line_start": 20,
+      "line_end": 20,
+      "case_id": "TC-02",
+      "path": "knowledge/L2/L2_REQ_001_joint_prediction_测试用例.md",
+      "source_sha256": "90541888927959f11f26f3a616577111c66eed380efa0e0a431483eb974cbf3c",
+      "evidence_unit": "raw_source_line_range_not_chunk_id"
+    },
+    "E11": {
+      "document_id": "MOCK-L0-001",
+      "line_start": 14,
+      "line_end": 22,
+      "heading": "## 2. 数据流",
+      "path": "knowledge/L0/L0_demo_system.md",
+      "source_sha256": "c864e2b2c88601a743d92ee38fd14dbfd1ed9adc97e2f7312e6ae945db63a59a",
+      "evidence_unit": "raw_source_line_range_not_chunk_id"
+    }
+  },
+  "tasks": [
+    {
+      "task_id": "Q01",
+      "entry_mode": "new_requirement_document",
+      "input_document_id": "MOCK-TASK-004",
+      "query": "为联合策略及派生分跳过校准的新需求找历史参考：需要原始计算公式、单次预测用例、旧校准预期、拆分和输出头冲突边界，以及当前预测字段命名。",
+      "candidate_required_evidence": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08"
+      ],
+      "candidate_background_evidence": [
+        "E09",
+        "E11"
+      ],
+      "historical_search_exclude_document_ids": [
+        "MOCK-TASK-004"
+      ],
+      "candidate_irrelevant_document_ids": [
+        "MOCK-NOISE-005"
+      ],
+      "cautions": [
+        "Historical TC-05 derived score expectations differ from the new requirement.",
+        "Current L1 navigation is not a historical snapshot.",
+        "Required evidence set is synthetic and intentionally multi-document."
+      ]
+    },
+    {
+      "task_id": "Q02",
+      "entry_mode": "task_description",
+      "query": "只有任务描述：要在一次预测中拿到多种原始结果，调整部分合成分的后处理，并回归多策略冲突。请找过去的公式、用例和边界材料。",
+      "candidate_required_evidence": [
+        "E01",
+        "E03",
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "candidate_background_evidence": [
+        "E02",
+        "E08"
+      ],
+      "historical_search_exclude_document_ids": [
+        "MOCK-TASK-004"
+      ],
+      "candidate_irrelevant_document_ids": [
+        "MOCK-NOISE-005"
+      ]
+    },
+    {
+      "task_id": "Q03",
+      "entry_mode": "scoped_case_lookup",
+      "query": "联合模型历史用例文档中的TC-02引用了哪些准备条件？请提供该行和被引用条件的出处。",
+      "scope_document_ids": [
+        "MOCK-CASE-001"
+      ],
+      "candidate_required_evidence": [
+        "E10",
+        "E03"
+      ],
+      "cautions": [
+        "Reuse only referenced model outputs, weights and calibration switch; do not inherit every action or assertion."
+      ]
+    },
+    {
+      "task_id": "Q04",
+      "entry_mode": "task_description",
+      "query": "联合模型在GPU上怎样分配显存，显存不足时的自动降级阈值是多少？",
+      "candidate_required_evidence": [],
+      "expected_status": "insufficient_evidence",
+      "cautions": [
+        "The synthetic corpus has no GPU memory allocation or threshold specification; do not invent a value."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0230",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: last week; See Hybrid Search + Reranking for the underlying intuition.For multihop queries, the planner also emits views over window chunks when window chunks are enabled at ingest time (`BOOKS_RAG_ENABLE_WINDOW_CHUNKS=1`; gated by `WindowChunkConfig.enable` in `core/config.p",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web05.json"
+  ],
+  "deep_verified": false
+}

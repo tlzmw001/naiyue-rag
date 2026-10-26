@@ -1,0 +1,27 @@
+{
+  "candidate_id": "github-0868",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：我们项目目前实现的是一个完整的企业知识库 RAG 问答系统，支持上传 .txt、.md、.pdf 文档，后端会对文档进行保存、解析、清洗、父子 chunk 切分、调用百炼 embedding 向量化并写入 Elasticsearch；用户提问时，系统会同时使用 BM25 关键词检索和向量 KNN 语义检索进行混合召回，再对命中的 child chunk 扩展 parent 上下文和相邻 chunk，拼接 prompt 后调用百炼大模型生成答案，并返回引用来源。系统还实现了文档内容 hash 去重、文档列表查看与删除、重复文档清理、问答耗时日志、历史问答记录、健康检查，以及基于评测集的 Reca",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/github/wdshuai01__knowledge-base-rag.json"
+  ],
+  "deep_verified": false
+}

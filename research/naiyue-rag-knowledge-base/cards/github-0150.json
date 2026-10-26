@@ -1,0 +1,27 @@
+{
+  "candidate_id": "github-0150",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：Chat AI Lite 是一个多功能的 AI Web 应用，涵盖了各种 AI 场景，包括 AI 聊天、AI 本地知识库（RAG）、AI 助手、AI 数字人以及图像生成等。",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/github/KevinZhang19870314__chat-ai-lite.json"
+  ],
+  "deep_verified": false
+}

@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0041",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: 2 days ago; 知识库是一组文档，为智能体提供预训练数据之外的领域专属信息。 ...   * 检索增强生成（RAG）：文档会提前建立索引，在对话时仅检索与每个用户查询最相关的段落供智能体使用。 ... 智能体始终通过 RAG 访问文件夹，绝不会将其放入提示词。 ... Markdown  | `.md`\n\n  * 完整上下文：智能体将文档全文放入系统提示词，使整个文档在每轮对话中都可用。由于这会占用上下文，仅适用于足够小的文档；较大的文档必须改用 RAG。\n  * 检索增强生成（RAG）：文档会提前建立索引，在对话时仅检索与每个用户查询最",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web11.json"
+  ],
+  "deep_verified": false
+}

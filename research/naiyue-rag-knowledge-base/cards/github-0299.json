@@ -1,0 +1,27 @@
+{
+  "candidate_id": "github-0299",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：Dify-Plus 是面向企业场景的 Dify 开源增强版，基于 Dify 原生架构，提供 Casdoor 单点登录、统一系统管理、用户额度、API 密钥限额和应用中心等功能，无需单独部署管理后台。🚀  本项目为社区二次开发成果，遵循 Dify 原项目的开源许可证及版权要求。涉及商业授权、多租户服务或品牌使用等需求，请以 Dify 官方许可条款为准，并联系官方获取相应授权与支持。",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/github/YFGaia__dify-plus.json"
+  ],
+  "deep_verified": false
+}

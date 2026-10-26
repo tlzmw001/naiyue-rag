@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0073",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Published: 7 months ago; Crawled: last month; # GraphRAG Studio — 产品需求文档（PRD）v1.0 ... 在学术研究、企业知识管理、技术调研等场景中，研究人员需要从大量非结构化文档（PDF 论文、DOCX 报告、PPT 演示文稿、图片等）中快速提炼关键知识，理解概念之间的语义关联。 ... GraphRAG Studio 基于知识图谱增强的多模态 RAG 技术，将文档自动解析为结构化知识图谱，并提供图谱可视化、多轮问答、实体搜索等完整工具链，将非结构化文档转化为可交互的知识网络。\n\n# GraphR",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web12.json"
+  ],
+  "deep_verified": false
+}

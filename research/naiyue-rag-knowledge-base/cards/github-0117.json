@@ -1,0 +1,87 @@
+{
+  "candidate_id": "github-0117",
+  "problem_solved": "把文档片段、实体关系图及向量结果结合检索，并提供图维护、问答或结构化数据出口。",
+  "solution": {
+    "tools": [
+      "Python >=3.10",
+      "LightRAG Python库/REST",
+      "JsonKVStorage",
+      "NanoVectorDBStorage",
+      "NetworkXStorage",
+      "独立embedding/LLM/rerank回调"
+    ],
+    "workflow": [
+      "ainsert文本和file_paths → enqueue full_docs/doc_status",
+      "固定token切分并写片段KV和向量",
+      "LLM抽实体关系并merge图/向量/来源贡献",
+      "查询默认LLM抽高低层关键词",
+      "模式选择实体/关系图入口及片段向量",
+      "截断→片段合并→上下文与raw_data",
+      "query_data返回证据或aquery生成答案"
+    ],
+    "key_technologies": [
+      "实体关系双层检索",
+      "mix图+片段向量",
+      "round-robin合并去重",
+      "token预算",
+      "source_id和图贡献恢复锚点",
+      "文档删除/共享图对象重建"
+    ],
+    "core_mechanism": "ainsert → apipeline_enqueue_documents → apipeline_process_enqueue_documents → process_single_document → _process_extract_entities → merge_nodes_and_edges；aquery_data设only_need_context并调kg_query → keyword extraction → _build_query_context四阶段，mix加chunks_vdb，naive仅片段向量；query_data跳过答案生成但默认仍有关键词LLM。",
+    "outputs": [
+      "全文/片段KV和状态/track_id",
+      "图及实体/关系/片段向量",
+      "status/data/metadata结构化检索结果",
+      "可选LLM答案"
+    ],
+    "tradeoffs": "新增建图/总结/关键词LLM、实体关系向量和图删除维护。SDK ainsert固定F切分，REST/低层pipeline有更多选择；原文span/heading/sidecar部分存在但query_data证据未全透传版本/行区间。来源规范为basename，同名正文再次摄取被重复拒绝，不是版本替换。MIT；速度/费用/用户语料质量未运行。",
+    "observed_pitfalls": [],
+    "unresolved_problems": [
+      {
+        "problem": "适合本项目的完整原文位置和版本证据契约",
+        "why_unresolved": "内部有full_doc_id/heading/sidecar，但最终convert_to_user_format的chunk仅reference_id/content/file_path/chunk_id；默认RAW路径未保证Markdown行号且写时删除_source_span。",
+        "evidence_ref": "clones/lightrag/lightrag/utils.py"
+      },
+      {
+        "problem": "同名需求文档更新的版本替换",
+        "why_unresolved": "enqueue按规范basename去重；再次输入同名新正文不能自动代替现有文档，本轮未验证原子版本替换。",
+        "evidence_ref": "clones/lightrag/lightrag/pipeline.py"
+      }
+    ]
+  },
+  "overlap": "Markdown文本知识库、Agent所需纯证据出口和LLM适配、图/向量对照及来源贡献维护。",
+  "difference": "图谱框架含服务/解析/多模态等范围；没有测试业务本体。global是关系向量检索，不是微软GraphRAG社区MapReduce；MCP适配本轮未核验。",
+  "delivery_assessment": {
+    "delivery_model": "open_source_self_hosted",
+    "implementation_visibility": "open_backend",
+    "upstream_access_method": "Python注入模型回调与独立服务配置，SDK/REST返回数据；未实际服务调用",
+    "platform_policy_status": "unknown",
+    "live_verified": false
+  },
+  "usability_assessment": {
+    "verdict": "borrow_idea",
+    "rationale": "借鉴query_data/生成分离、四阶段预算和来源贡献追踪；图路线需在用户Markdown上证明召回增益并验证更新删除，当前不整套采用。"
+  },
+  "info_completeness": "high",
+  "terminal_state": "partial_borrow",
+  "state_rationale": "已入选且完成摄取、模型/存储、图查询/数据出口、删除核心链静态深验；未执行第三方测试与模型服务。",
+  "borrow_points": [
+    "query_data纯数据出口与生成分离",
+    "查询四阶段与预算",
+    "naive/mix对照",
+    "来源贡献与删除恢复锚点"
+  ],
+  "evidence_refs": [
+    "deep/lightrag.md",
+    "clones/lightrag/README.md",
+    "clones/lightrag/LICENSE",
+    "clones/lightrag/pyproject.toml",
+    "clones/lightrag/lightrag/lightrag.py",
+    "clones/lightrag/lightrag/pipeline.py",
+    "clones/lightrag/lightrag/operate.py",
+    "clones/lightrag/lightrag/utils.py",
+    "clones/lightrag/lightrag/utils_pipeline.py",
+    "clones/lightrag/lightrag/kg/nano_vector_db_impl.py"
+  ],
+  "deep_verified": true
+}

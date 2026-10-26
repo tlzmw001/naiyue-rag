@@ -1,0 +1,27 @@
+{
+  "candidate_id": "web-0075",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：[wordlim: 200] Crawled: today; 基于已填写的 Graph Schema，单击一键扩展，大模型将结合填写内容与知识库文档信息，自动推理并进行内容扩展。 ... 当从知识范围中移除文档时，对应的图谱内容（三元组数据）将被删除，且无法恢复。 ... GraphRAG：在传统 RAG 基础上，增加了知识图谱构建环节，将文档中的知识抽取为结构化的三元组，支持更复杂的多跳推理问答。\n## 常见问题\n\n#### GraphRAG 和传统 RAG 有什么区别？\n\n传统 RAG：将文档切片后向量化存储，通过语义相似度检索相关片段，适合简单的事实性问答。\n\nGraphRAG：在传统 ",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/web/web12.json"
+  ],
+  "deep_verified": false
+}

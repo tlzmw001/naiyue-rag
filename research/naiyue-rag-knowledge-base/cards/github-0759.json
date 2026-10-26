@@ -1,0 +1,85 @@
+{
+  "candidate_id": "github-0759",
+  "problem_solved": "Python 组件式文档摄取、索引、证据检索和可选 LLM 问答；可组装知识库，业务角色与版本规则需项目自行设计。",
+  "solution": {
+    "tools": [
+      "llama-index-core 0.14.25",
+      "MarkdownNodeParser",
+      "可选 llama-index-readers-file 0.7.0",
+      "VectorStoreIndex / SimpleVectorStore / 可替换后端",
+      "显式配置的 Embedding 与可选聊天 LLM 插件"
+    ],
+    "workflow": [
+      "读取原文为 Document（或显式 MarkdownReader 重组文档）并注入 metadata",
+      "MarkdownNodeParser 按标题切为 TextNode，NodeParser 继承 metadata/关系及可空字符定位",
+      "IngestionPipeline 依次 transformations、缓存和 docstore 去重更新，按配置写向量库",
+      "VectorStoreIndex 对节点 embedding 写入后端，retriever 对查询 embedding 并传 metadata filters",
+      "返回 NodeWithScore 原始证据；独立 query_engine 可继续 postprocess 和 LLM synthesize",
+      "RetrieverEvaluator 用节点 ID 与 expected_ids 评分，callback/instrumentation 提供追踪扩展点"
+    ],
+    "key_technologies": [
+      "Document / TextNode / NodeWithScore",
+      "Markdown 标题栈切分",
+      "批量 embedding 与向量 top-k",
+      "metadata 预过滤",
+      "transformation hash 缓存",
+      "稳定文档 ID + hash 更新",
+      "retriever / synthesizer 分离"
+    ],
+    "core_mechanism": "MarkdownNodeParser -> NodeParser._postprocess_parsed_nodes -> IngestionPipeline.run / VectorStoreIndex -> embed_nodes -> vector_store.add -> VectorIndexRetriever -> vector_store.query -> NodeWithScore；可选 RetrieverQueryEngine -> CompactAndRefine -> llm.predict。完整函数/行号见 deep/llama-index.md。",
+    "outputs": [
+      "可定位（字符索引可空）TextNode 与 metadata/关系",
+      "向量索引及 docstore/cache",
+      "带分数的 NodeWithScore",
+      "可选 LLM Response / source nodes",
+      "基于 expected_ids 的检索评测结果"
+    ],
+    "tradeoffs": "组件可组合且模型后端可替换，但 core 依赖广、全局 Settings 有 OpenAI 默认、不同后端过滤/持久化不同。MarkdownReader 会重组正文，原文件行号需自维护；默认随机节点 ID 不利于固定片段评测；业务版本权威性及跨存储更新恢复需自行约定。仅静态源码深验，未运行。",
+    "observed_pitfalls": [],
+    "unresolved_problems": [
+      {
+        "problem": "本项目要求的原 Markdown 文件行号、业务版本和证据角色尚未在所追默认链中完整提供。",
+        "why_unresolved": "NodeParser 用 parent text.find 生成可空字符区间；Reader 可重组文本；metadata 允许业务注入但未自动执行新需求/旧用例权威性规则。",
+        "evidence_ref": "deep/llama-index.md"
+      },
+      {
+        "problem": "所追 Pipeline 未提供跨 docstore/vector_store 的事务式更新恢复或历史版本保留。",
+        "why_unresolved": "upsert 先删除旧条目再转换，随后先写 vector_store 后更新 docstore；失败恢复需结合选定后端验证。此项是静态风险，不是实际发生故障。",
+        "evidence_ref": "clones/llama-index/llama-index-core/llama_index/core/ingestion/pipeline.py:469-507,650-660"
+      }
+    ]
+  },
+  "overlap": "覆盖 Markdown 文档/节点、metadata 范围、embedding、检索证据、可选问答、评测及更新组件。",
+  "difference": "组件库不等于含需求/方案/用例角色策略的测试知识库；本轮没有验证 MCP 适配或真实中文业务效果。",
+  "usability_assessment": {
+    "verdict": "combined_use",
+    "rationale": "可将节点/检索/模型后端组件与自定义 Evidence/业务版本适配组合；有具体源码与官方使用文档，未做安装和运行验证，未选为项目框架。"
+  },
+  "info_completeness": "high",
+  "terminal_state": "partial_borrow",
+  "state_rationale": "已入选限额候选并静态追真实调用链；明确借鉴组件及关键边界，未宣称真实服务或业务质量。",
+  "evidence_refs": [
+    "deep/llama-index.md",
+    "raw/clone-snapshots.json",
+    "clones/llama-index/llama-index-core/llama_index/core/node_parser/file/markdown.py",
+    "clones/llama-index/llama-index-core/llama_index/core/ingestion/pipeline.py",
+    "clones/llama-index/llama-index-core/llama_index/core/indices/vector_store/retrievers/retriever.py",
+    "clones/llama-index/llama-index-core/llama_index/core/query_engine/retriever_query_engine.py",
+    "clones/llama-index/docs/src/content/docs/framework/module_guides/loading/ingestion_pipeline/index.md"
+  ],
+  "deep_verified": true,
+  "delivery_assessment": {
+    "delivery_model": "open_source_self_hosted",
+    "implementation_visibility": "open_backend",
+    "upstream_access_method": "本地 Python 核心库；按需模型/向量库适配器可能调用外部服务，需独立配置。",
+    "platform_policy_status": "mixed",
+    "live_verified": false
+  },
+  "borrow_points": [
+    "Document/Node/NodeWithScore 分层",
+    "显式 transformations 与 retriever/synthesizer 分离",
+    "metadata 范围过滤和模型输入可控",
+    "缓存与 docstore 去重分离",
+    "按节点 ID 评测并明确 metric 计算单位"
+  ]
+}

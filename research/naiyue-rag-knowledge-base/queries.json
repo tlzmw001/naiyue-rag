@@ -1,0 +1,370 @@
+{
+  "research_contract_version": 3,
+  "project": {
+    "name": "naiyue-rag 测试知识库",
+    "one_sentence_definition": "用用户提供的 Markdown 用例、需求和方案文档构建可追溯知识库，供测试 Agent 查询证据和支撑用例设计，并可选由独立问答层接入大模型。",
+    "core_technical_challenges": [
+      {
+        "id": "C1",
+        "challenge": "可定位且可更新的 Markdown 知识",
+        "definition": "标题、片段、来源、版本与权限范围能从输入保持到检索结果，重复摄取和更新不留下过期证据。"
+      },
+      {
+        "id": "C2",
+        "challenge": "面向测试任务的证据检索",
+        "definition": "需求、方案、旧用例可能用不同术语表达同一行为，需要比较关键词、向量及混合策略，并将无答案与系统失败区分。"
+      },
+      {
+        "id": "C3",
+        "challenge": "Agent 消费与独立质量评测",
+        "definition": "向测试 Agent 提供结构化证据，未来可由 MCP 暴露；可选问答层须验证引用和证据支持，固定评测集要分别度量检索与回答。"
+      }
+    ],
+    "workflow_steps": [
+      {
+        "id": "S1",
+        "name": "Markdown 摄取与版本",
+        "input": "用户授权的需求、设计与旧用例 Markdown 文件",
+        "action": "解析结构、切分、记录原文位置/来源/版本并处理更新",
+        "output": "可定位且只有当前有效版本的文档片段"
+      },
+      {
+        "id": "S2",
+        "name": "索引与范围",
+        "input": "片段、知识库范围和索引配置",
+        "action": "建立关键词或向量索引并约束查询可见范围",
+        "output": "可重复查询、可更新的索引"
+      },
+      {
+        "id": "S3",
+        "name": "召回与证据",
+        "input": "测试问题、范围和 top-k",
+        "action": "召回、排序、可选融合/重排并组装结构化证据",
+        "output": "含原文、定位、版本和检索信息的证据或明确错误"
+      },
+      {
+        "id": "S4",
+        "name": "测试 Agent 与问答消费",
+        "input": "结构化证据及 Agent 用例设计或问答请求",
+        "action": "由库接口或后续 MCP 提供证据；可选 LLM 答案层校验引用和不足证据",
+        "output": "供 Agent 使用的证据，或有来源的回答/拒答"
+      },
+      {
+        "id": "S5",
+        "name": "评测与反馈",
+        "input": "固定问题、人工标注的相关证据及检索/问答轨迹",
+        "action": "分别计算检索、引用和答案指标并分析失败",
+        "output": "可重复的基线报告与下一轮改进依据"
+      }
+    ],
+    "user_directions": [
+      {
+        "id": "D1",
+        "direction": "Jerry-ai-dev/MODULAR-RAG-MCP-SERVER 作为技术参考，核验其大模型接入和与本需求的差异",
+        "applicable_sources": [
+          "github",
+          "web"
+        ]
+      },
+      {
+        "id": "D2",
+        "direction": "知识库、RAG、知识图谱、GraphRAG 作为路线发现关键词，并比较其对测试知识库的适用性",
+        "applicable_sources": [
+          "github",
+          "web"
+        ]
+      }
+    ],
+    "provider_shapes": [
+      {
+        "id": "P1",
+        "shape": "open_source_self_hosted",
+        "applicable_sources": [
+          "github"
+        ]
+      },
+      {
+        "id": "P2",
+        "shape": "hosted_api",
+        "applicable_sources": [
+          "web"
+        ]
+      },
+      {
+        "id": "P3",
+        "shape": "model_or_mcp",
+        "applicable_sources": [
+          "github",
+          "web"
+        ]
+      },
+      {
+        "id": "P4",
+        "shape": "external_index_or_reader",
+        "applicable_sources": [
+          "github",
+          "web"
+        ]
+      }
+    ]
+  },
+  "enabled_sources": [
+    "github",
+    "web"
+  ],
+  "queries": {
+    "github": [
+      {
+        "id": "gh01",
+        "query": "MODULAR-RAG-MCP-SERVER",
+        "intent": "优先核验用户指定参考项目",
+        "query_type": "user_direction",
+        "direction_id": "D1",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh12",
+        "query": "知识库 RAG",
+        "intent": "按用户补充的中文关键词发现方案",
+        "query_type": "user_direction",
+        "direction_id": "D2",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh13",
+        "query": "knowledge graph RAG",
+        "intent": "发现图谱结合检索的路线",
+        "query_type": "user_direction",
+        "direction_id": "D2",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh14",
+        "query": "graphrag",
+        "intent": "交叉发现 GraphRAG 实现",
+        "query_type": "user_direction",
+        "direction_id": "D2",
+        "search_mode": "topic"
+      },
+      {
+        "id": "gh02",
+        "query": "markdown knowledge base rag testing agent mcp",
+        "intent": "发现覆盖完整任务的开源方案",
+        "query_type": "direct",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh03",
+        "query": "rag,knowledge-base",
+        "intent": "交叉发现知识库项目",
+        "query_type": "direct",
+        "search_mode": "topic"
+      },
+      {
+        "id": "gh04",
+        "query": "markdown chunk heading line number incremental indexing",
+        "intent": "查 Markdown 定位和增量摄取",
+        "query_type": "workflow_step",
+        "workflow_step_id": "S1",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh05",
+        "query": "rag knowledge base metadata filter index update",
+        "intent": "查索引和范围实现",
+        "query_type": "workflow_step",
+        "workflow_step_id": "S2",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh06",
+        "query": "hybrid retrieval citation evidence rag",
+        "intent": "查召回与证据契约",
+        "query_type": "workflow_step",
+        "workflow_step_id": "S3",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh07",
+        "query": "mcp server rag knowledge base agent tool",
+        "intent": "查 Agent/MCP 消费形态",
+        "query_type": "workflow_step",
+        "workflow_step_id": "S4",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh08",
+        "query": "rag retrieval evaluation golden dataset recall at k",
+        "intent": "查固定检索评测与轨迹",
+        "query_type": "workflow_step",
+        "workflow_step_id": "S5",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh09",
+        "query": "self hosted markdown rag knowledge base",
+        "intent": "补充可自托管实现",
+        "query_type": "provider_shape",
+        "provider_shape_id": "P1",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh10",
+        "query": "rag mcp server embedding llm",
+        "intent": "补充模型或 MCP 形态",
+        "query_type": "provider_shape",
+        "provider_shape_id": "P3",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh11",
+        "query": "markdown reader vector index rag sdk",
+        "intent": "补充独立读取器和外部索引",
+        "query_type": "provider_shape",
+        "provider_shape_id": "P4",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh15",
+        "query": "knowledge-base rag",
+        "intent": "宽查询发现整体知识库方案",
+        "query_type": "direct",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh16",
+        "query": "RAG language:Python",
+        "intent": "补查宽查询窗口之外的 Python RAG 平台",
+        "query_type": "direct",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh17",
+        "query": "llama_index in:name",
+        "intent": "补查数据索引组件的官方仓库",
+        "query_type": "direct",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh18",
+        "query": "haystack in:name",
+        "intent": "补查检索编排组件",
+        "query_type": "direct",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh19",
+        "query": "dify in:name",
+        "intent": "补查完整知识库平台",
+        "query_type": "direct",
+        "search_mode": "text"
+      },
+      {
+        "id": "gh20",
+        "query": "ragflow in:name user:infiniflow",
+        "intent": "精确定位宽查询窗口之外的官方完整平台",
+        "query_type": "direct",
+        "search_mode": "text"
+      }
+    ],
+    "web": [
+      {
+        "id": "web01",
+        "query": "MODULAR-RAG-MCP-SERVER LLM embedding query knowledge hub source",
+        "intent": "优先核验用户指定参考项目的大模型接线",
+        "query_type": "user_direction",
+        "direction_id": "D1"
+      },
+      {
+        "id": "web11",
+        "query": "知识库 RAG Markdown 需求文档 测试用例 Agent",
+        "intent": "先以中文知识库/RAG关键词发现业务路线",
+        "query_type": "user_direction",
+        "direction_id": "D2"
+      },
+      {
+        "id": "web12",
+        "query": "知识图谱 GraphRAG 需求文档 测试用例 知识库",
+        "intent": "按用户补充的知识图谱关键词发现路线",
+        "query_type": "user_direction",
+        "direction_id": "D2"
+      },
+      {
+        "id": "web13",
+        "query": "GraphRAG knowledge graph RAG local global search official documentation",
+        "intent": "核对图谱路线的官方机制和适用问题",
+        "query_type": "user_direction",
+        "direction_id": "D2"
+      },
+      {
+        "id": "web02",
+        "query": "how to build a markdown RAG knowledge base for software testing agent with citations evaluation",
+        "intent": "发现当前完整方案",
+        "query_type": "direct"
+      },
+      {
+        "id": "web03",
+        "query": "Markdown RAG chunking preserve headings line number source version update official docs",
+        "intent": "查摄取和原文定位",
+        "query_type": "workflow_step",
+        "workflow_step_id": "S1"
+      },
+      {
+        "id": "web04",
+        "query": "RAG knowledge base index metadata filters document updates official documentation",
+        "intent": "查索引与范围",
+        "query_type": "workflow_step",
+        "workflow_step_id": "S2"
+      },
+      {
+        "id": "web05",
+        "query": "RAG hybrid retrieval evidence citations reranking official documentation",
+        "intent": "查召回和证据",
+        "query_type": "workflow_step",
+        "workflow_step_id": "S3"
+      },
+      {
+        "id": "web06",
+        "query": "MCP knowledge base search tool agent RAG official documentation",
+        "intent": "查 Agent/MCP 消费",
+        "query_type": "workflow_step",
+        "workflow_step_id": "S4"
+      },
+      {
+        "id": "web07",
+        "query": "RAG retrieval evaluation Recall@k answer faithfulness labeled dataset official docs",
+        "intent": "查评测与反馈",
+        "query_type": "workflow_step",
+        "workflow_step_id": "S5"
+      },
+      {
+        "id": "web08",
+        "query": "managed file search knowledge base API citations document updates pricing official",
+        "intent": "补充托管 API 形态",
+        "query_type": "provider_shape",
+        "provider_shape_id": "P2"
+      },
+      {
+        "id": "web09",
+        "query": "MCP RAG knowledge base tool server specification SDK",
+        "intent": "补充 MCP/模型形态",
+        "query_type": "provider_shape",
+        "provider_shape_id": "P3"
+      },
+      {
+        "id": "web10",
+        "query": "Markdown reader and vector index integration RAG official docs",
+        "intent": "补充读取器或外部索引形态",
+        "query_type": "provider_shape",
+        "provider_shape_id": "P4"
+      }
+    ]
+  },
+  "approval": {
+    "status": "approved",
+    "date": "2026-10-09",
+    "user_message": "好的那继续吧",
+    "scope": "原计划加用户提出的知识库/RAG/知识图谱宽查询"
+  },
+  "supplement_reason": "宽查询窗口未覆盖框架和完整平台，补查组件及完整产品路线；不扩大深验上限。"
+}

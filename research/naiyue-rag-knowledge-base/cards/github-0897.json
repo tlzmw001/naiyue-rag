@@ -1,0 +1,27 @@
+{
+  "candidate_id": "github-0897",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：FssAdmin(NestJs)是一款基于**NestJS + TypeScript6 + TypeORM1.0等** 技术栈的全功能企业级后端管理系统，集成 RBAC 权限、多租户、AI 对话、知识库 RAG、定时任务、系统监控、API 文档等开箱即用的企业级能力",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/github/xuey490__FssAdmin_NestJs.json"
+  ],
+  "deep_verified": false
+}

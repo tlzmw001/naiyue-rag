@@ -1,0 +1,27 @@
+{
+  "candidate_id": "github-0219",
+  "problem_solved": "UNKNOWN；来源摘要仅作发现：本地化 RAG 知识库问答 Web App：TS 全栈 + TriviumDB 向量库 + 本地 LLM（Ollama/llama.cpp，计划迁移 vLLM），契约先行 + 可证伪评估 + TDD",
+  "solution": {
+    "tools": [],
+    "workflow": [],
+    "key_technologies": [],
+    "core_mechanism": "UNKNOWN，待核心代码或一手材料核验",
+    "outputs": [],
+    "tradeoffs": "UNKNOWN",
+    "observed_pitfalls": [],
+    "unresolved_problems": []
+  },
+  "overlap": "发现词项命中，实际贴合度待核验",
+  "difference": "UNKNOWN",
+  "usability_assessment": {
+    "verdict": "unverified",
+    "rationale": "发现记录不证明实现或业务效果"
+  },
+  "info_completeness": "low",
+  "terminal_state": "relevant_not_deep_verified",
+  "state_rationale": "保留可能相关或误命中记录；未深验",
+  "evidence_refs": [
+    "raw/github/QWQcool__KnowledgeBase-Rag-Vllm.json"
+  ],
+  "deep_verified": false
+}
