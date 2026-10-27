@@ -62,7 +62,8 @@ def test_update_merges_history_and_replaces_current_l1(setup_job,tmp_path):
     new_l1=next(d for d in current.documents if d.document_id==old_l1.document_id)
     assert new_l1.source_sha256!=old_l1.source_sha256
     bundle=job.manager.bundles.load(second.active.version.bundle_id)
-    assert second.encoding_report.paired_input_count==len(bundle.chunks)
+    assert second.encoding_report.paired_input_count==second.encoding_summary.encoded_chunk_count<len(bundle.chunks)
+    assert second.encoding_summary.encoded_chunk_count+second.encoding_summary.reused_chunk_count==len(bundle.chunks)
     assert len(job.manager.bundles.load(first.active.version.bundle_id).documents)==3
     assert all(c.metadata['source_sha256']==new_l1.source_sha256 for c in bundle.chunks if c.source_ref==new_l1.document_id)
     assert bundle.relations['edges']
@@ -75,7 +76,8 @@ def test_valid_zero_chunk_ingestion(tmp_path,monkeypatch,mode):
     import naiyue_rag.storage.chroma_backend as backend
     monkeypatch.setattr(backend,'new_client',lambda path,root:FakeClient(path,[],{}))
     job,dense,_=job_for(tmp_path);receipt=job.run(expected_revision=0)
-    assert receipt.encoding_report.status=='empty' and dense.calls==0
+    assert receipt.encoding_report is None and dense.calls==0
+    assert receipt.encoding_summary.total_chunk_count==receipt.encoding_summary.encoded_chunk_count==0
     assert receipt.active.version.document_count==(mode=='blank') and receipt.active.version.chunk_count==0
     assert job.run(expected_revision=1).encoding_report is None
 
@@ -186,10 +188,14 @@ def test_pre_encoding_limits_use_current_configuration(setup_job,tmp_path,limit)
     assert dense.calls==0 and job.manager.catalog.read() is None
 
 
-def test_reuse_still_applies_new_input_limits(setup_job,tmp_path):
+@pytest.mark.parametrize('action',['repeat','missing-removal'])
+@pytest.mark.parametrize('limit',['max_input_utf8_bytes','max_batch_input_utf8_bytes'])
+def test_reuse_still_applies_new_per_item_byte_limits(setup_job,tmp_path,action,limit):
     job,*_=setup_job;first=job.run(expected_revision=0)
-    limited,dense,_=job_for(tmp_path,cfg=config(runtime={'max_inputs':1}))
-    with pytest.raises(IngestionJobError) as caught:limited.run(expected_revision=1)
+    limited,dense,_=job_for(tmp_path,cfg=config(runtime={limit:1}))
+    with pytest.raises(IngestionJobError) as caught:
+        if action=='repeat':limited.run(expected_revision=1)
+        else:limited.remove_document('doc-'+'0'*64,expected_revision=1)
     assert caught.value.stage=='prepare' and caught.value.code=='ingestion_prepare_failed'
     assert dense.calls==0 and limited.manager.catalog.read()==first.active
 
@@ -221,7 +227,10 @@ def test_profile_change_executes_full_pipeline_with_pinned_old_audit(setup_job,t
     elif change=='collection':args['chroma']=ChromaSettings('changed_collection',2)
     else:args['bm25']=BM25Settings(1.2,.5)
     changed,dense,_=job_for(tmp_path,**args);result=changed.run(expected_revision=1)
-    assert result.active.revision==2 and result.encoding_report is not None and dense.calls>0
+    assert result.active.revision==2
+    if change in ('collection','bm25'):
+        assert result.encoding_report is None and dense.calls==0 and result.encoding_summary.encoded_chunk_count==0
+    else:assert result.encoding_report is not None and dense.calls>0 and result.encoding_summary.reused_chunk_count==0
     assert result.unchanged_document_count==3 and result.updated_document_count==0
     assert result.active.version.bundle_id!=first.active.version.bundle_id
 

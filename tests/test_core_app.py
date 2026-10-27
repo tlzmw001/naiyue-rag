@@ -45,7 +45,7 @@ def native(root,action):
     httpx.HTTPTransport=lambda **kwargs:httpx.MockTransport(respond)
     from naiyue_rag.app import main
     args=['--config',str(root/'app.yaml'),action]
-    if action=='query':args+=['--query','cvr_ltv 开关 TC-01 0.5','--expected-revision','1']
+    if action=='query':args+=['--query',' \ncvr_ltv 开关 TC-01 0.5\t','--expected-revision','1']
     if action=='ingest':args+=['--expected-revision','1']
     code=main(args)
     assert code==0
@@ -73,6 +73,10 @@ def test_cli_real_assembly_sdk_and_native_indexes(tmp_path,action):
     assert proc.returncode==0,proc.stderr
     result=json.loads(proc.stdout)
     if action=='query':
+        import hashlib
+        assert result['schema_version']==2
+        assert result['query_sha256']==hashlib.sha256('cvr_ltv 开关 TC-01 0.5'.encode()).hexdigest()
+        assert result['raw_query_sha256']==hashlib.sha256(' \ncvr_ltv 开关 TC-01 0.5\t'.encode()).hexdigest()
         assert result['status']=='retrieved' and result['evidence']
         assert result['observations']['rerank']['usage']['total_tokens']==15
         assert 'dense_vector' not in proc.stdout and 'SYNTHETIC-NOT-A-KEY' not in proc.stdout+proc.stderr

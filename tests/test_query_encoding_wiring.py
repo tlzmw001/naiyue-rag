@@ -44,8 +44,8 @@ def test_yaml_sdk_sparse_result_shares_document_identities_and_client(tmp_path,f
     assert query.sparse.term_frequencies['开关']==2 and query.sparse.doc_length==5
     assert len(transport.requests)==len(documents.report.batches)+1
     wire=json.loads(transport.requests[-1].content)
-    assert wire['input']==['query: '+QUERY] and wire['encoding_format']=='float'
-    assert query.input.retrieval_text==QUERY and query.input.source_span is None
+    assert wire['input']==['query: '+QUERY.strip()] and wire['encoding_format']=='float'
+    assert query.input.retrieval_text==QUERY.strip() and query.input.source_span is None
     assert query.report.requests['attempted_requests']==1 and query.report.usage['total_tokens']==7
     assert QueryEncodingResult.from_dict(json.loads(json.dumps(query.to_dict()))).to_dict()==query.to_dict()
     assert PRIVATE not in json.dumps(query.to_dict())

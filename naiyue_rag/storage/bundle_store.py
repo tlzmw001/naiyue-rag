@@ -10,11 +10,14 @@ import uuid
 from ..core.errors import StorageError,SettingsError
 from ..core.storage_settings import validate_storage_settings
 from .artifact_bundle import IndexBundle
+from .artifact_bundle_v2 import IndexBundleV2
+from .bundle_encoding import bundle_encoding
 
 FILES=('documents.json','chunks.json','relations.json','encoding.json')
 MANIFEST_FIELDS={'schema_version','status','bundle_id','knowledge_base_id','document_count','chunk_count',
                  'model_space_id','representation_id','tokenizer_id','source_fingerprint','files'}
 ENCODING_FIELDS={'encoding_settings','ingestion_settings','encoding_result','preparation_diagnostics'}
+ENCODING_FIELDS_V2={'encoding_settings','ingestion_settings','encoding_snapshot','encoding_summary','preparation_diagnostics'}
 
 
 def _json_bytes(value,limit,*,newline=True):
@@ -85,16 +88,17 @@ class BundleStore:
         if len(documents)>self.settings.max_documents or len(chunks)>self.settings.max_chunks:raise StorageError('bundle_limit_exceeded')
 
     def _materialize(self,bundle):
-        if type(bundle) is not IndexBundle:raise StorageError('invalid_index_bundle')
+        if type(bundle) not in (IndexBundle,IndexBundleV2):raise StorageError('invalid_index_bundle')
         self._check_counts(bundle.documents,bundle.chunks)
         raw=bundle.to_dict()
         if raw['knowledge_base_id']!=self.settings.knowledge_base_id:raise StorageError('bundle_scope_mismatch')
         data={name:raw[name.removesuffix('.json')] for name in FILES[:3]}
-        data['encoding.json']={key:raw[key] for key in ENCODING_FIELDS}
+        fields=ENCODING_FIELDS if type(bundle) is IndexBundle else ENCODING_FIELDS_V2
+        data['encoding.json']={key:raw[key] for key in fields}
         encoded={name:_json_bytes(value,self.settings.max_file_bytes) for name,value in data.items()}
         if sum(map(len,encoded.values()))>self.settings.max_bundle_bytes:raise StorageError('bundle_limit_exceeded')
-        result=bundle.encoding_result
-        header=dict(schema_version=1,status='ready',knowledge_base_id=bundle.knowledge_base_id,
+        result=bundle_encoding(bundle)
+        header=dict(schema_version=1 if type(bundle) is IndexBundle else 2,status='ready',knowledge_base_id=bundle.knowledge_base_id,
             document_count=len(bundle.documents),chunk_count=len(bundle.chunks),model_space_id=result.model_space_id,
             representation_id=result.representation_id,tokenizer_id=result.tokenizer_id,
             source_fingerprint=bundle.relations['source_fingerprint'],
@@ -173,7 +177,7 @@ class BundleStore:
         header=_parse(raw)
         try:
             if type(header) is not dict or set(header)!=MANIFEST_FIELDS:raise ValueError()
-            if type(header['schema_version']) is not int or header['schema_version']!=1 or header['status']!='ready':raise ValueError()
+            if type(header['schema_version']) is not int or header['schema_version'] not in (1,2) or header['status']!='ready':raise ValueError()
             if header['bundle_id']!=uid or header['knowledge_base_id']!=self.settings.knowledge_base_id:raise ValueError()
             for key in ['model_space_id','representation_id','tokenizer_id','source_fingerprint']:
                 if not _hash(header[key]):raise ValueError()
@@ -209,8 +213,10 @@ class BundleStore:
                 data[name]=_parse(raw)
             self._check_counts(data['documents.json'],data['chunks.json'])
             encoding=data['encoding.json']
-            if type(encoding) is not dict or set(encoding)!=ENCODING_FIELDS:raise StorageError('bundle_integrity_failed')
-            bundle=IndexBundle.from_dict(dict(knowledge_base_id=self.settings.knowledge_base_id,
+            fields=ENCODING_FIELDS if header['schema_version']==1 else ENCODING_FIELDS_V2
+            kind=IndexBundle if header['schema_version']==1 else IndexBundleV2
+            if type(encoding) is not dict or set(encoding)!=fields:raise StorageError('bundle_integrity_failed')
+            bundle=kind.from_dict(dict(knowledge_base_id=self.settings.knowledge_base_id,
                 documents=data['documents.json'],chunks=data['chunks.json'],relations=data['relations.json'],**encoding))
             actual,_=self._materialize(bundle)
             if actual!=header:raise StorageError('bundle_integrity_failed')

@@ -1,4 +1,5 @@
 """Native Chroma query/score geometry and new-process formal Dense consumers."""
+from naiyue_rag.storage.bundle_encoding import bundle_encoding
 from pathlib import Path
 import os
 import json
@@ -47,7 +48,7 @@ def isolated(root,action):
     assert {h.chunk.id:h.chunk.to_dict() for h in result.hits}==expected
     if result.hits:
         import numpy as np
-        vectors={r.input.item_id:np.asarray(r.dense_vector,dtype=np.float32) for r in bundle.encoding_result.records}
+        vectors={r.input.item_id:np.asarray(r.dense_vector,dtype=np.float32) for r in bundle_encoding(bundle).records}
         query=np.asarray(ready.encoding.dense_vector,dtype=np.float32)
         for hit in result.hits:
             vec=vectors[hit.chunk.id];distance=float(1-np.dot(query,vec)/(np.linalg.norm(query)*np.linalg.norm(vec)))

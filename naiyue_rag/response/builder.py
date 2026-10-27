@@ -71,8 +71,9 @@ class ResponseBuilder:
             status='retrieved' if selected else 'no_evidence_fits' if ranked.hits else 'empty'
             observations['packing']=dict(selected_count=len(selected),omitted_count=len(omitted),
                 context_characters=characters,elapsed_seconds=max(0.,time.monotonic()-started))
-            output=dict(schema_version=1,status=status,answerability='unknown',
+            output=dict(schema_version=2,status=status,answerability='unknown',
                 active=None if prepared.active is None else prepared.active.to_dict(),query_sha256=prepared.query_sha256,
+                raw_query_sha256=prepared.raw_query_sha256,
                 context_text='\n\n'.join(parts),evidence=selected,omitted=omitted,observations=observations)
             if len(json.dumps(output,ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf-8'))>cfg.max_response_bytes:
                 raise EvidenceError('evidence_response_limit',observations)

@@ -9,7 +9,7 @@ from .errors import SettingsError
 
 LOGGER = logging.getLogger(__name__)
 from .yaml_config import read_yaml_mapping
-from .ingestion_settings import IngestionSettings
+from .ingestion_settings import IngestionSettings,validate_ingestion_settings
 GROUPS = {
     'snapshot': {'dataset', 'corpus_run', 'vector_run'},
     'embedding': {'endpoint', 'model', 'dimensions'},
@@ -84,7 +84,9 @@ class Settings:
         ingestion = None
         if 'ingestion' in data:
             group = data['ingestion']
-            if type(group) is not dict or set(group) != {'chunk_size','chunk_overlap'}: _invalid()
+            fields={'chunk_size','chunk_overlap'}
+            if type(group) is not dict or set(group) not in (fields,fields|{'chunking_policy'}): _invalid()
+            if 'chunking_policy' in group and group['chunking_policy'] is None:_invalid()
             ingestion = IngestionSettings(**group)
         value = cls(SnapshotSettings(**data['snapshot']), EmbeddingSettings(**data['embedding']),
                     RetrievalSettings(**data['retrieval']), SparseSettings(**data['sparse']),
@@ -106,9 +108,8 @@ def validate_settings(settings):
         _invalid()
     if settings.ingestion is not None:
         group=settings.ingestion
-        if type(group) is not IngestionSettings or type(group.chunk_size) is not int or group.chunk_size <= 0 or \
-                type(group.chunk_overlap) is not int or not 0 <= group.chunk_overlap < group.chunk_size:
-            _invalid()
+        try:validate_ingestion_settings(group)
+        except SettingsError:_invalid()
     for name, cls in [('snapshot', SnapshotSettings), ('embedding', EmbeddingSettings),
                       ('retrieval', RetrievalSettings), ('sparse', SparseSettings),
                       ('runtime', RuntimeSettings)]:

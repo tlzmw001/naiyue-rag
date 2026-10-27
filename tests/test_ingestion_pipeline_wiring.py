@@ -16,6 +16,7 @@ def native_job(root,action,mode):
     from naiyue_rag import (IngestionPipeline,IngestionSettings,EncodingSettings,BatchProcessor,DenseEncoder,
         SparseEncoder,OpenAICompatibleEmbedding,IngestionReceipt)
     from naiyue_rag.storage import StorageSettings,ChromaSettings,BM25Settings,BundleStore
+    from naiyue_rag.storage.bundle_encoding import bundle_encoding
     from test_storage_bundle import ingredients,storage_settings
     from test_sparse_encoding_settings import sparse_config
     from test_encoding_settings import config
@@ -58,18 +59,22 @@ def native_job(root,action,mode):
         assert receipt.active.to_dict()==prior['active']
         assert receipt.unchanged_document_count==len(bundle.documents)
     else:
-        assert len(seen)==receipt.encoding_report.requests['attempted_requests']
-        assert receipt.encoding_report.paired_input_count==len(bundle.chunks)
+        assert len(seen)==(0 if receipt.encoding_report is None else receipt.encoding_report.requests['attempted_requests'])
+        assert receipt.encoding_summary.total_chunk_count==len(bundle.chunks)
+        assert receipt.encoding_summary.encoded_chunk_count+receipt.encoding_summary.reused_chunk_count==len(bundle.chunks)
+        if receipt.encoding_report is not None:
+            assert receipt.encoding_report.paired_input_count==receipt.encoding_summary.encoded_chunk_count
         if action=='update':
             assert receipt.active.revision==2 and receipt.retained_document_count==2
             assert receipt.added_document_count==2 and receipt.updated_document_count==1
+            assert receipt.encoding_summary.reused_chunk_count>0
             assert len(BundleStore(storage).load(prior['bundle_id']).documents)==3
         (root/'job.json').write_text(json.dumps(dict(storage=storage.to_dict(),encoding=cfg.to_dict(),
             active=receipt.active.to_dict(),bundle_id=receipt.active.version.bundle_id,ids=[c.id for c in bundle.chunks])))
     assert IngestionReceipt.from_dict(json.loads(json.dumps(receipt.to_dict())))==receipt
     assert job.manager.open_active()==receipt.active
-    if mode=='all-empty':assert all(not r.sparse.tokens for r in bundle.encoding_result.records)
-    elif mode=='mixed':assert any(r.sparse.tokens for r in bundle.encoding_result.records) and any(not r.sparse.tokens for r in bundle.encoding_result.records)
+    if mode=='all-empty':assert all(not r.sparse.tokens for r in bundle_encoding(bundle).records)
+    elif mode=='mixed':assert any(r.sparse.tokens for r in bundle_encoding(bundle).records) and any(not r.sparse.tokens for r in bundle_encoding(bundle).records)
     print(json.dumps(dict(pid=os.getpid(),receipt=receipt.to_dict(),mock_requests=len(seen),model_requests=0,
         listing=listing.to_dict(),details=details)))
 

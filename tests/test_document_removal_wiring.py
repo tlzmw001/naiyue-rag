@@ -56,11 +56,15 @@ def native_removal(root,action,mode):
     assert receipt.previous_active.to_dict()==prior['active']
     assert receipt.status==('not_found' if mode=='zero' else 'removed')
     assert len(seen)==(0 if receipt.encoding_report is None else receipt.encoding_report.requests['attempted_requests'])
+    assert seen==[]
+    if mode!='zero':assert receipt.encoding_summary.encoded_chunk_count==0
     assert job.manager.open_active()==receipt.active
     bundle=BundleStore(storage).load(receipt.active.version.bundle_id)
     assert all(d.id!=uid for d in bundle.documents) and all(c.source_ref!=uid for c in bundle.chunks)
     assert len(bundle.documents)==prior['active']['version']['document_count']-(info is not None)
-    if mode in ('all-empty','mixed'):assert all(not r.sparse.tokens for r in bundle.encoding_result.records)
+    if mode in ('all-empty','mixed'):
+        from naiyue_rag.storage.bundle_encoding import bundle_encoding
+        assert all(not r.sparse.tokens for r in bundle_encoding(bundle).records)
     if mode=='normal':assert any(c.metadata.get('case_id')=='TC-01' for c in bundle.chunks)
     listing=job.manager.list_documents(expected_revision=receipt.active.revision)
     details=[job.manager.get_document_detail(d.document_id,expected_revision=receipt.active.revision).to_dict()

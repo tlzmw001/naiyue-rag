@@ -20,7 +20,25 @@
 
 ## 当前阶段与下一步
 
-2026-10-16，阶段A的 **M1–M6独立RAG核心已完成当前本地工程验收**：Markdown摄取/结构准备、成对编码、版本与双索引管理、范围检索/可配置BM25统计/RRF、GLM与本地CrossEncoder重排、完整证据/引用/预算及独立CLI。当前全量 **2151 passed in404.22s**。这不是生产成熟度或真实知识库质量声明。
+2026-10-26：三项优化的[7个分片Spec](docs/specs/README.md)及D1/D2/D3均已确认，7片实现与消费者接线已完成。第7片最终完整回归2235 passed in437.84s（0:07:17），扩展回归96 passed in92.60s。阶段B本人6.5练习仍待，不自动进入Agent/MCP。
+
+### 切分策略身份与旧资料包读取（Spec0045）
+
+新任务默认markdown-source-zh-v2，正文切分加入字面量中文“。”“，”，分隔符保留在前块；标题、代码、表格与完整用例保护合同保持。旧包没有chunking_policy时固定解释为v1，v1保存仍沿原有两个摄取参数字段，冻结旧包manifest和bundle_id保持。实际切分参数、组件版本及指纹由统一策略profile提供；未知策略或不匹配产物明确失败，复用时核对片段实际profile。旧包新进程双索引消费及v1/v2固定切分对照已通过，见[Spec0045](docs/specs/0045-chunking-policy-versioning.md)和[0046](docs/specs/0046-chinese-punctuation-splitting.md)。已有知识库不会自动重建。
+
+### 文档级增量编码与移除复用（Spec0047–0050）
+
+正式摄取只对新增或内容变化文档整份重新准备和编码，身份匹配的未变化/历史保留文档复用成对数据；模型、表示、分词或切分身份变化及force会全量重算。索引参数独立失效，只改索引参数可复用编码。显式移除复用保留集且不调用编码器，原文件和历史版本保留；后续主动摄取可把仍在源目录的文档重新纳入。
+
+新构建保存自包含IndexBundleV2：EncodingSnapshot保存完整成对数据和来源，IngestionEncodingSummary只统计本次encoded/reused与真实job_report，零编码时报告为null。新程序可读v1/v2，旧程序不能读取v2；原IndexBundle/EncodingResult合同保留。每个新版本仍完整核验资料、关系和输入，完整构建Chroma/BM25后沿原revision门禁激活；不承诺所有CPU耗时只随变化量增长。两种切分策略的原生增量/全量对照覆盖global/scope统计、范围过滤、检索与最终证据，详见[Spec0050](docs/specs/0050-incremental-consumers-and-acceptance.md)。本地合成与MockTransport结果不替代真实资料质量、模型成本或生产性能验收。
+
+### 查询输入与最终证据格式（Spec0044）
+
+新执行只清理查询首尾空白，内部空格/换行及技术标识符保留；Dense/Sparse和重排消费同一实际查询，Dense再添加配置query_prefix。最终证据为schema_version=2，query_sha256表示实际查询，raw_query_sha256用于核对原始输入；原始全文只在内存调用上下文保留，不自动写入证据或日志。只差首尾空白的输入具有相同编码输入/指纹，原始指纹仍可不同。
+
+QueryEncodingResult/PreparedQuery仍可读取旧精确字段集合；旧数据按保存时文本解释，不重新清理、编码或改写历史报告。旧结果没有原始指纹时只回填其既有查询指纹，不声称恢复原始全文。新最终JSON格式需要消费者识别schema2；知识库索引不因本项调整而重建。当前验收进度见[Spec0044](docs/specs/0044-query-whitespace-normalization.md)。
+
+2026-10-16，阶段A的 **M1–M6独立RAG核心已完成当前本地工程验收**：Markdown摄取/结构准备、成对编码、版本与双索引管理、范围检索/可配置BM25统计/RRF、GLM与本地CrossEncoder重排、完整证据/引用/预算及独立CLI。阶段A当时全量 **2151 passed in404.22s**（当前优化后的最新结果见上文）。这不是生产成熟度或真实知识库质量声明。
 
 用户已确认按[阶段A/B/C](docs/project-plan.md)推进；**当前处于阶段B系统学习，六章机制讲解与调试路线已覆盖，6.5本人定位练习待完成，独立调试能力未评估**，不继续扩Agent/MCP。具体小节进度、六章地图与真实代码入口见[学习路线](docs/1.0/learning-roadmap.md)。本人独立调试/实现能力仍需课堂和练习验证。
 
@@ -59,7 +77,7 @@ sparse = SparseRetriever(manager, load_sparse_query_settings(sparse_query_config
 
 ## M5.1：查询准备（2026-10-15）
 
-`QueryPipeline(document_manager, query_encoder).prepare(query, scope_document_ids=..., exclude_document_ids=..., expected_revision=...)`实际串接纯请求预检、一次活动版本选择、文档范围投影、已存两路索引审计与M3问题编码。`scope=None`为全库、`[]`为空范围；未知ID明确失败。问题原文不改写，模型/表示/tokenizer/维度必须匹配所选索引，编码中激活新版本也不改变本次绑定。
+`QueryPipeline(document_manager, query_encoder).prepare(query, scope_document_ids=..., exclude_document_ids=..., expected_revision=...)`实际串接纯请求预检、一次活动版本选择、文档范围投影、已存两路索引审计与M3问题编码。`scope=None`为全库、`[]`为空范围；未知ID明确失败。当前按Spec0044保留原始内存上下文，实际查询只去除首尾空白；模型/表示/tokenizer/维度必须匹配所选索引，编码中激活新版本也不改变本次绑定。
 
 返回严格`PreparedQuery`，状态为ready/unactivated/empty_scope/empty_index，包含所选版本、范围内文档与片段ID、成对编码及最小安全追踪。ready表示准备成功；该结果本身不含召回命中，上述正式Retriever/Hybrid是其消费者，最终证据在M6组装。失败返回安全`QueryJobError`，保留已选版本和本次已知编码用量。
 
@@ -111,7 +129,7 @@ with load_embedding_provider(
 
 [Spec0034](docs/specs/0034-m4-document-removal.md)已实现/接线并完成本地验收；全量1780 passed in201.57s。新增`IngestionPipeline.remove_document(document_id, expected_revision=...)`，从已保存的选定快照排除一份文档，与run共用完整M2/M3→资料包→Chroma/BM25→revision激活链。原Markdown及旧版本保留，不级联用例；保留引用产生明确诊断。原文件仍在目录时，后续主动run按新增重新纳入，符合用户已确认语义。
 
-结果为严格`RemovalReceipt`：removed/not_found、请求ID、前后活动版本、旧文档摘要及本次编码报告。未命中不编码/新建版本，但已有版本仍审计并检查revision；最后一文档移除成为合法活动空库。处理身份不匹配明确报ingestion_profile_mismatch；构建失败、并发冲突和提交unknown沿原整次错误合同保留实际用量/状态。
+结果为严格`RemovalReceipt`：removed/not_found、请求ID、前后活动版本、旧文档摘要及本次编码报告。当前Spec0050命中移除亦为零编码，encoding_report=None，encoding_summary计数保留片段复用量。未命中不编码/新建版本，但已有版本仍审计并检查revision；最后一文档移除成为合法活动空库。处理身份不匹配明确报ingestion_profile_mismatch；构建失败、并发冲突和提交unknown沿原整次错误合同保留实际用量/状态。
 
 ```zsh
 .venv/bin/python -m pytest -q tests/test_document_removal.py tests/test_ingestion_types.py tests/test_file_integrity.py tests/test_ingestion_pipeline.py tests/test_document_removal_wiring.py --tb=short
@@ -120,11 +138,11 @@ with load_embedding_provider(
 # 1780 passed in 201.57s (0:03:21)
 ```
 
-四种原生跨进程场景完成新版本回取、完整旧版本审计/回读与既有消费者接线；Embedding用SDK MockTransport，真实模型POST0。首版全量重编码保留集，原始目录仍须满足构造校验；不提供物理擦除、GC或恢复API，M5查询/真实资料质量/大库性能另验。完整课堂暂挂，当前下一步见[交接](docs/handoff.md)。
+四种原生跨进程场景完成新版本回取、完整旧版本审计/回读与既有消费者接线；Embedding用SDK MockTransport，真实模型POST0。上述为首版历史验证，首版全量重编码保留集，当前Spec0050复用保留集；原始目录仍须满足构造校验。不提供物理擦除、GC或恢复API，真实资料质量/大库性能另验。完整课堂暂挂，当前下一步见[交接](docs/handoff.md)。
 
 ## M4.6：正式摄取、重复判断与文档更新（2026-10-15）
 
-[Spec0033](docs/specs/0033-m4-ingestion-and-updates.md)已实现/接线并完成本地验收。正式`IngestionPipeline`串接M1加载、源版本/策略判断、M2、M3编码、资料包/两路构建与原有activate。输入目录作为新增/替换集合，未提供的历史文档保留；完全未变时不执行编码/save/build，但仍执行两路完整审计与revision门禁。有变化或force时，首版对合并后的完整知识库重编码并构建新版本。
+[Spec0033](docs/specs/0033-m4-ingestion-and-updates.md)已实现/接线并完成本地验收。正式`IngestionPipeline`串接M1加载、源版本/策略判断、M2、M3编码、资料包/两路构建与原有activate。输入目录作为新增/替换集合，未提供的历史文档保留；完全未变时不执行编码/save/build，但仍执行两路完整审计与revision门禁。有变化或force时，首版对合并后的完整知识库重编码并构建新版本；当前Spec0049已改为按文档增量编码，force或语义身份失效仍全量重算。
 
 调用形状如下；调用方先用已有配置/Provider入口装配实际BatchProcessor，并持有Provider生命周期，本段未对真实目录或模型执行：
 
@@ -136,10 +154,10 @@ pipeline = IngestionPipeline(
     knowledge_base_root=source_root, project_root=project_root,
 )
 receipt = pipeline.run(expected_revision=0)  # 初次；后续使用已读活动revision
-# receipt.status / receipt.active / 四类文档计数 / receipt.encoding_report
+# receipt.status / receipt.active / 四类文档计数 / receipt.encoding_report / receipt.encoding_summary
 ```
 
-回执中的编码报告只属于本次作业，复用时为None。失败抛IngestionJobError，保留实际编码观察、已知候选bundle_id和激活状态；冲突不覆盖其他写者，提交不确定标unknown，不自动重试/回滚/清理。force不绕过坏基线、索引健康、限额或来源检查。
+回执中的编码报告只属于本次作业，零编码时为None；encoding_summary区分本次编码与复用，total_chunk_count=encoded_chunk_count+reused_chunk_count。失败抛IngestionJobError，保留实际编码观察、已知候选bundle_id和激活状态；冲突不覆盖其他写者，提交不确定标unknown，不自动重试/回滚/清理。force不绕过坏基线、索引健康、限额或来源检查。
 
 ```zsh
 .venv/bin/python -m pytest -q tests/test_ingestion_types.py tests/test_file_integrity.py tests/test_ingestion_pipeline.py tests/test_ingestion_pipeline_wiring.py --tb=short
@@ -148,7 +166,7 @@ receipt = pipeline.run(expected_revision=0)  # 初次；后续使用已读活动
 # 1702 passed in 170.29s
 ```
 
-真实Sparse/Chroma/BM25+Embedding SDK MockTransport完成跨进程首次/重复、正常场景更新与历史保留，既有管理消费者回取完整用例；外部真实模型请求0。当前是库级入口，真实资料质量/大库/编码复用/移除与M5另验；Pipeline审计可能发生SDK内部维护写，不承诺M4.5管理读取的字节/mtime不变。完整课堂暂挂，下一步见[交接](docs/handoff.md)。
+真实Sparse/Chroma/BM25+Embedding SDK MockTransport完成跨进程首次/重复、正常场景更新与历史保留，既有管理消费者回取完整用例；外部真实模型请求0。上述为首版历史验证，后续编码复用、移除与M5已分别验收；真实资料质量/大库性能仍另验。Pipeline审计可能发生SDK内部维护写，不承诺M4.5管理读取的字节/mtime不变。完整课堂暂挂，下一步见[交接](docs/handoff.md)。
 
 ## M4.5：只读文档列表与详情（2026-10-15）
 

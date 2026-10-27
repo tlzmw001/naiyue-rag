@@ -1,6 +1,6 @@
 """Lossless M1/M2/M3 bundle; recomputation verifies sources, not business truth."""
 import copy
-from dataclasses import dataclass,asdict
+from dataclasses import dataclass
 import hashlib
 import json
 from ..core.types import Document,Chunk
@@ -71,7 +71,7 @@ class IndexBundle:
         self.__post_init__()
         return dict(knowledge_base_id=self.knowledge_base_id,documents=[d.to_dict() for d in self.documents],
             chunks=[c.to_dict() for c in self.chunks],relations=copy.deepcopy(self.relations),
-            encoding_settings=self.encoding_settings.to_dict(),ingestion_settings=asdict(self.ingestion_settings),
+            encoding_settings=self.encoding_settings.to_dict(),ingestion_settings=self.ingestion_settings.to_dict(),
             encoding_result=self.encoding_result.to_dict(),preparation_diagnostics=copy.deepcopy(self.preparation_diagnostics))
 
     @classmethod
@@ -82,7 +82,7 @@ class IndexBundle:
             raw['documents']=[Document.from_dict(d) for d in raw['documents']]
             raw['chunks']=[Chunk.from_dict(c) for c in raw['chunks']]
             raw['encoding_settings']=EncodingSettings.from_dict(raw['encoding_settings'])
-            raw['ingestion_settings']=IngestionSettings(**raw['ingestion_settings'])
+            raw['ingestion_settings']=IngestionSettings.from_dict(raw['ingestion_settings'])
             raw['encoding_result']=EncodingResult.from_dict(raw['encoding_result'])
             return cls(**raw)
         except StorageError:raise

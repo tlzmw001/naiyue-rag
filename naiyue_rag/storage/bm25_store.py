@@ -1,4 +1,5 @@
 """Versioned keyword artifacts bound to one complete M1/M2/M3 bundle."""
+from .bundle_encoding import bundle_encoding
 from dataclasses import dataclass,asdict
 import os
 import uuid
@@ -43,7 +44,7 @@ class BM25Store:
         return self.bundles._path(index_id,namespace='bm25',error_code='bm25_path_invalid')
 
     def _prepare(self,bundle_id):
-        bundle=self.bundles.load(bundle_id);result=bundle.encoding_result;records=[r.sparse for r in result.records]
+        bundle=self.bundles.load(bundle_id);result=bundle_encoding(bundle);records=[r.sparse for r in result.records]
         postings,avgdl,nnz=backend.statistics(records)
         if max(len(records),len(postings),nnz)>2147483647:raise StorageError('bm25_limit_exceeded')
         # Bound native payloads before the SDK allocates its arrays; header overhead is checked after save.

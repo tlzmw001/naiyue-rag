@@ -10,6 +10,7 @@ from ..storage.version_types import MAX_REVISION
 @dataclass(frozen=True,repr=False)
 class _ProcessedQuery:
     query:str
+    raw_query:str
     scope_document_ids:tuple|None
     exclude_document_ids:tuple
     expected_revision:int|None
@@ -40,7 +41,7 @@ class QueryProcessor:
             scope=self._ids(scope_document_ids,optional=True);exclude=self._ids(exclude_document_ids)
             item=prepare_query_encoding_input(query,self.settings)
             plan_encoding_batches([item],self.settings)
-            return _ProcessedQuery(query,scope,exclude,expected_revision)
+            return _ProcessedQuery(item.retrieval_text,query,scope,exclude,expected_revision)
         except QueryJobError:raise
         except EncodingError as error:raise QueryJobError('request',error.code) from None
         except Exception:raise QueryJobError('request','query_invalid_request') from None

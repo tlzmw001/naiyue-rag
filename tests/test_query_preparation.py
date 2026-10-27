@@ -49,7 +49,7 @@ def test_ready_scope_projection_encoding_and_trace(job,monkeypatch):
     assert result.status=='ready' and result.active==active and reads==[1]
     assert result.document_ids==sorted(selected)
     assert result.chunk_ids==sorted(c.id for c in bundle.chunks if c.source_ref in selected)
-    assert len(dense.calls)==len(sparse.calls)==1 and result.encoding.input.retrieval_text==QUERY
+    assert len(dense.calls)==len(sparse.calls)==1 and result.encoding.input.retrieval_text==QUERY.strip()
     assert result.encoding.input.query_sha256==result.query_sha256
     trace=result.trace_report
     assert [r['stage'] for r in trace['stages']]==['request','resources','embedding']
@@ -269,7 +269,7 @@ def test_control_interrupt_propagates(job):
 def test_prepared_result_roundtrip_and_copy(job):
     from naiyue_rag import PreparedQuery
     pipeline,_,_,_,_=job;result=pipeline.prepare(QUERY);raw=result.to_dict()
-    assert set(raw)=={'status','active','query_sha256','document_ids','chunk_ids','encoding','trace_report'}
+    assert set(raw)=={'status','active','query_sha256','document_ids','chunk_ids','encoding','trace_report','raw_query_sha256'}
     assert PreparedQuery.from_dict(json.loads(json.dumps(raw))).to_dict()==raw
     raw['encoding']['dense_vector'].clear();raw['chunk_ids'].clear();raw['trace_report']['stages'].clear()
     assert result.encoding.dense_vector and result.chunk_ids and result.trace_report['stages']

@@ -1,4 +1,5 @@
 """Source-bound Chroma indexes: serial publication, semantic audits, no active pointer."""
+from .bundle_encoding import bundle_encoding
 import copy
 from dataclasses import dataclass,asdict
 import math
@@ -48,7 +49,7 @@ class ChromaStore:
         return self.bundles._path(index_id,namespace='vectors',error_code='chroma_path_invalid')
 
     def _prepare(self,bundle_id):
-        bundle=self.bundles.load(bundle_id);result=bundle.encoding_result
+        bundle=self.bundles.load(bundle_id);result=bundle_encoding(bundle)
         policy=dict(schema_version=1,bundle_id=bundle_id,collection_name=self.config.collection_name,
                     sdk_version=SDK_VERSION,storage_policy='explicit-cosine-v1')
         index_id=_digest(_json_bytes(policy,self.settings.max_manifest_bytes,newline=False))

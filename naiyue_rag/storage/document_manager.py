@@ -1,4 +1,5 @@
 """Activate only complete audited bundles; readers pin one persisted version."""
+from .bundle_encoding import bundle_encoding
 from pathlib import Path
 from ..core.storage_settings import validate_storage_settings
 from ..core.chroma_settings import ChromaSettings
@@ -27,7 +28,7 @@ class DocumentManager:
         self.bundles=BundleStore(storage_settings);self.catalog=IndexCatalog(storage_settings)
 
     def _audit(self,bundle_id,chroma,bm25):
-        bundle=self.bundles.load(bundle_id);result=bundle.encoding_result
+        bundle=self.bundles.load(bundle_id);result=bundle_encoding(bundle)
         vector=ChromaStore(self.settings,chroma,project_root=self.project_root).audit(bundle_id)
         sparse=BM25Store(self.settings,bm25).audit(bundle_id)
         common=dict(bundle_id=bundle_id,knowledge_base_id=bundle.knowledge_base_id,
@@ -88,7 +89,7 @@ class DocumentManager:
         revision=0 if active is None else active.revision
         if expected_revision is not None and expected_revision!=revision:raise StorageError('catalog_revision_conflict')
         if active is None:return None,None
-        bundle=self.bundles.load(active.version.bundle_id);result=bundle.encoding_result;version=active.version
+        bundle=self.bundles.load(active.version.bundle_id);result=bundle_encoding(bundle);version=active.version
         actual=(bundle.knowledge_base_id,len(bundle.documents),len(bundle.chunks),bundle.relations['source_fingerprint'],
                 result.model_space_id,result.representation_id,result.tokenizer_id,result.dimensions)
         expected=(version.knowledge_base_id,version.document_count,version.chunk_count,version.source_fingerprint,

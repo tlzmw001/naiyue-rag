@@ -37,7 +37,7 @@ def test_actual_hybrid_rerank_mapping_roundtrip_and_copy(job,native_query):
     result=CoreReranker(config(),backend).rerank(hybrid)
     assert [h['chunk_id'] for h in result.hits]==[h.chunk.id for h in reversed(hybrid.hits)][:2]
     assert [h['rank'] for h in result.hits]==[1,2] and result.report['status']=='success'
-    assert len(dense.calls)==len(sparse.calls)==1 and backend.calls[0][0]==QUERY
+    assert len(dense.calls)==len(sparse.calls)==1 and backend.calls[0][0]==QUERY.strip()
     assert {c['passage_id'] for c in backend.calls[0][1]}=={h.chunk.id for h in hybrid.hits}
     for hit,candidate in zip(hybrid.hits,backend.calls[0][1],strict=True):
         assert hit.chunk.metadata['retrieval_view']['text'] in candidate['text']

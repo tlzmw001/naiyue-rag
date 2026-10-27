@@ -53,8 +53,8 @@ def test_invalid_document_input_never_becomes_encoding_text(tmp_path,fault,caplo
 
 def test_query_preserves_raw_text_and_empty_documents(tmp_path):
     query='  检查开关  ';item=prepare_query_encoding_input(query,config())
-    assert item.retrieval_text==query and item.embedding_text=='query: '+query
-    assert item.query_sha256==hashlib.sha256(query.encode()).hexdigest()
+    assert item.retrieval_text==query.strip() and item.embedding_text=='query: '+query.strip()
+    assert item.query_sha256==hashlib.sha256(query.strip().encode()).hexdigest()
     assert item.source_span is None and item.source_document_id is None
     assert prepare_document_encoding_inputs([document('')],[],config())==[]
     assert plan_encoding_batches([],config())==[]

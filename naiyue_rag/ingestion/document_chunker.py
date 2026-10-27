@@ -1,17 +1,17 @@
 """Configured recursive prose splitting plus protected Markdown business units."""
 import copy
 import hashlib
-from importlib.metadata import version
 import json
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from ..core.errors import ChunkingError, ContractError, SettingsError
 from ..core.ingestion_settings import validate_ingestion_settings
+from ..core.chunking_policy import LEGACY_SEPARATORS,chunking_profile
 from ..core.types import Chunk
 from .markdown_structure import scan_document, source_span, fail_chunking
 
-SEPARATORS=['\n\n','\n','. ','! ','? ','; ',', ',' ','']
+SEPARATORS=list(LEGACY_SEPARATORS)
 
 
 class DocumentChunker:
@@ -19,15 +19,11 @@ class DocumentChunker:
         try:
             validate_ingestion_settings(settings)
             self._size=settings.chunk_size;self._overlap=settings.chunk_overlap
+            self._profile=chunking_profile(settings)
             self._splitter=RecursiveCharacterTextSplitter(chunk_size=self._size,chunk_overlap=self._overlap,
-                separators=SEPARATORS,length_function=len,is_separator_regex=False,
-                keep_separator=True,strip_whitespace=False,add_start_index=True)
-            self._profile={'parser':'markdown-it-py','parser_version':version('markdown-it-py'),
-                'splitter':'recursive','splitter_version':version('langchain-text-splitters'),
-                'chunk_size':self._size,'chunk_overlap':self._overlap,'separators':list(SEPARATORS),
-                'strip_whitespace':False,'keep_separator':True,'policy':'markdown-source-v1'}
-            self._profile['config_sha256']=hashlib.sha256(json.dumps(self._profile,sort_keys=True,
-                ensure_ascii=False,separators=(',',':')).encode()).hexdigest()
+                separators=self._profile['separators'],length_function=len,is_separator_regex=False,
+                keep_separator=self._profile['keep_separator'],strip_whitespace=self._profile['strip_whitespace'],
+                add_start_index=True)
         except (SettingsError,ValueError,TypeError):
             fail_chunking('invalid_chunking_config')
 

@@ -1,4 +1,5 @@
 """Explicit source reads from a pinned bundle; no SDK, provider or latest lookup."""
+from ..storage.bundle_encoding import bundle_encoding
 import copy
 import logging
 import re
@@ -37,7 +38,7 @@ class KnowledgeReader:
             prepared=PreparedQuery.from_dict(prepared.to_dict())
         except Exception:_invalid()
         if prepared.active is None:_invalid()
-        version=prepared.active.version;bundle=self.bundles.load(version.bundle_id);result=bundle.encoding_result
+        version=prepared.active.version;bundle=self.bundles.load(version.bundle_id);result=bundle_encoding(bundle)
         expected=(self.settings.knowledge_base_id,len(bundle.documents),len(bundle.chunks),bundle.relations['source_fingerprint'],
                   result.model_space_id,result.representation_id,result.tokenizer_id,result.dimensions)
         actual=(version.knowledge_base_id,version.document_count,version.chunk_count,version.source_fingerprint,

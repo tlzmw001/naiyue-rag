@@ -1,6 +1,6 @@
 """A pinned internal execution result, not a final evidence/tool response."""
 import copy
-from dataclasses import dataclass
+from dataclasses import dataclass,field
 import re
 from .encoding_report import _hash
 from .query_encoding_types import QueryEncodingResult
@@ -27,11 +27,14 @@ class PreparedQuery:
     chunk_ids:list
     encoding:QueryEncodingResult|None
     trace_report:dict
+    raw_query_sha256:str|None=field(default=None,kw_only=True)
 
     def __post_init__(self):
         try:
             if type(self.status) is not str or self.status not in ('ready','unactivated','empty_scope','empty_index') or \
                     not _hash(self.query_sha256):raise ValueError()
+            raw_hash=self.query_sha256 if self.raw_query_sha256 is None else self.raw_query_sha256
+            if not _hash(raw_hash):raise ValueError()
             active=self.active
             if active is not None:
                 if type(active) is not ActiveVersion:raise ValueError()
@@ -46,7 +49,7 @@ class PreparedQuery:
                 if self.status=='ready':
                     if not docs or not chunks or type(encoding) is not QueryEncodingResult:raise ValueError()
                     encoding=QueryEncodingResult.from_dict(encoding.to_dict())
-                    if encoding.input.query_sha256!=self.query_sha256 or \
+                    if encoding.input.query_sha256!=self.query_sha256 or encoding.raw_query_sha256!=raw_hash or \
                             (encoding.input.model_space_id,encoding.input.representation_id,encoding.tokenizer_id,encoding.dimensions)!= \
                             (version.model_space_id,version.representation_id,version.tokenizer_id,version.dimensions):raise ValueError()
                 else:
@@ -67,18 +70,22 @@ class PreparedQuery:
             object.__setattr__(self,'active',active);object.__setattr__(self,'document_ids',docs)
             object.__setattr__(self,'chunk_ids',chunks);object.__setattr__(self,'encoding',encoding)
             object.__setattr__(self,'trace_report',trace)
+            object.__setattr__(self,'raw_query_sha256',raw_hash)
         except Exception:_invalid()
 
     def to_dict(self):
         self.__post_init__()
         return dict(status=self.status,active=None if self.active is None else self.active.to_dict(),
             query_sha256=self.query_sha256,document_ids=list(self.document_ids),chunk_ids=list(self.chunk_ids),
-            encoding=None if self.encoding is None else self.encoding.to_dict(),trace_report=copy.deepcopy(self.trace_report))
+            encoding=None if self.encoding is None else self.encoding.to_dict(),trace_report=copy.deepcopy(self.trace_report),
+            raw_query_sha256=self.raw_query_sha256)
 
     @classmethod
     def from_dict(cls,data):
         try:
-            if type(data) is not dict or set(data)!=set(cls.__dataclass_fields__):raise ValueError()
+            fields=set(cls.__dataclass_fields__)
+            if type(data) is not dict or set(data) not in (fields,fields-{'raw_query_sha256'}):raise ValueError()
+            if 'raw_query_sha256' in data and data['raw_query_sha256'] is None:raise ValueError()
             raw=copy.deepcopy(data)
             if raw['active'] is not None:raw['active']=ActiveVersion.from_dict(raw['active'])
             if raw['encoding'] is not None:raw['encoding']=QueryEncodingResult.from_dict(raw['encoding'])

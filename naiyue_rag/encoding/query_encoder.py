@@ -2,7 +2,7 @@
 import logging
 import time
 from ..core.encoding_settings import validate_encoding_settings
-from ..core.encoding_types import fail_encoding
+from ..core.encoding_types import fail_encoding,text_sha
 from ..core.query_encoding_types import QueryEncodingResult
 from ..core.encoding_report import safe_code
 from ..core.errors import EncodingError,EmbeddingExecutionError,EncodingJobError
@@ -66,7 +66,7 @@ class QueryEncoder:
             terms=list(dict.fromkeys(row.tokens));observations.complete()
             stage='finalize';self._remaining(start)
             result=QueryEncodingResult(item,vector,row,terms,self.tokenizer_id,
-                self.settings.embedding.expected_dimensions,observations.snapshot(status='success'))
+                self.settings.embedding.expected_dimensions,observations.snapshot(status='success'),raw_query_sha256=text_sha(query))
             self._remaining(start)
             result.report=observations.snapshot(status='success');self._remaining(start)
             return result

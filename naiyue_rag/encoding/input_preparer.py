@@ -17,6 +17,10 @@ def _input(uid,kind,text,cfg,doc=None,span=None):
 
 
 def prepare_document_encoding_inputs(documents,chunks,settings):
+    return _prepare_document_encoding_inputs(documents,chunks,settings,job_limits=True)
+
+
+def _prepare_document_encoding_inputs(documents,chunks,settings,*,job_limits):
     validate_encoding_settings(settings)
     try:
         if type(documents) is not list or type(chunks) is not list:raise ValueError()
@@ -31,7 +35,7 @@ def prepare_document_encoding_inputs(documents,chunks,settings):
             if settings.representation.text_layout=='contexts_then_view':
                 text='\n'.join([c['text'] for c in expected.metadata['contexts']]+[text])
             output.append(_input(chunk.id,'document',text,settings,doc,expected.metadata['body_span']))
-        plan_encoding_batches(output,settings)
+        if job_limits:plan_encoding_batches(output,settings)
         return output
     except EncodingError:raise
     except Exception:fail_encoding('invalid_encoding_input')
@@ -41,6 +45,7 @@ def prepare_query_encoding_input(query,settings):
     validate_encoding_settings(settings)
     try:
         if type(query) is not str or not query.strip():raise ValueError()
+        query=query.strip()
         return _input('query-'+text_sha(query),'query',query,settings)
     except EncodingError:raise
     except Exception:fail_encoding('invalid_encoding_input')

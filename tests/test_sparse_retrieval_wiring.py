@@ -1,4 +1,5 @@
 """Both configured statistics policies consume saved native snapshots after restart."""
+from naiyue_rag.storage.bundle_encoding import bundle_encoding
 from pathlib import Path
 import json
 import os
@@ -20,7 +21,7 @@ def native(root):
     ready=PreparedQuery.from_dict(json.loads((root/'prepared-query.json').read_text()))
     manager=DocumentManager(cfg,ChromaSettings('changed_default',1),BM25Settings(1.2,0),project_root=root)
     manager.catalog.read=deny;QueryEncoder.encode=deny
-    bundle=BundleStore(cfg).load(ready.active.version.bundle_id);records=bundle.encoding_result.records
+    bundle=BundleStore(cfg).load(ready.active.version.bundle_id);records=bundle_encoding(bundle).records
     bm25=next(Path(cfg.storage_root).glob('*/bm25/[!.]*'))
     before={p.name:(p.read_bytes(),p.stat().st_mtime_ns) for p in bm25.iterdir()};outputs={}
     for mode in ('global','scope'):

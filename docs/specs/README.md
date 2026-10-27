@@ -1,5 +1,23 @@
 # 阶段 Spec
 
+## 2026-10-26：三项优化的7个分片（均已实现/接线/本地验收）
+
+用户要求先依次写Spec、讨论实际决策，再逐片实施，后进一步授权连续完成全部7片；D1/D2/D3均已确认。各片均先红后绿，第7片最终完整2235 passed in437.84s（0:07:17），不自动扩Agent/MCP。下表完整结果为对应片的实际历史运行，不累计推算。
+
+| 顺序 | Spec | 本片交付 | 实施及验收 |
+|---|---|---|---|
+| 1 | [0044 查询首尾空白与指纹](0044-query-whitespace-normalization.md) | 一致实际查询、原始核验及结果合同 | 已实现/本地验收，历史全量2161通过 |
+| 2 | [0045 切分策略身份](0045-chunking-policy-versioning.md) | v1精确重放、旧包可读与策略失效 | 已实现/本地验收，本片全量2178通过 |
+| 3 | [0046 中文标点切分](0046-chinese-punctuation-splitting.md) | v2标点规则与固定边界对照 | 已实现/本地验收，本片全量2187通过 |
+| 4 | [0047 文档复用计划](0047-document-encoding-reuse-plan.md) | 编码/复用文档集合与失效规则 | 已实现/本地验收，本片全量2196通过 |
+| 5 | [0048 编码快照与作业报告](0048-encoding-snapshot-and-job-accounting.md) | 新快照、V2存储、独立本次账务 | 已实现/本地验收，本片全量2220通过 |
+| 6 | [0049 正式增量摄取](0049-incremental-document-encoding.md) | 实际只编码变化文档、完整建双索引 | 已实现/本地验收，本片全量2227通过 |
+| 7 | [0050 移除与闭环验收](0050-incremental-consumers-and-acceptance.md) | 移除复用、消费者与全量基线对照 | 已实现/本地验收，扩展96及最终全量2235通过 |
+
+每片均需预期红灯、最小实现、定向/全量验证及L1/L2/L3证据。本文以下保留既有Spec状态和历史记录。
+
+## 已有模块Spec
+
 - [Spec0043：本地CrossEncoder（已实现/真实CPU与CLI接线/阶段A本地全量通过）](0043-m6-local-cross-encoder.md)
 - [Spec0042：完整证据、预算与独立入口（已接线/真实GLM闭环，验收见Spec）](0042-m6-evidence-and-independent-entry.md)
 - [Spec0041：固定候选重排与GLM（已实现/SDK模拟与真实服务证据）](0041-m6-reranking-contract-and-glm.md)

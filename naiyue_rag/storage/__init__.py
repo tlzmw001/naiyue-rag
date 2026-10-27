@@ -17,3 +17,6 @@ __all__+=['IndexVersion','ActiveVersion','ActivationReceipt','DocumentManager']
 
 from .document_views import DocumentInfo,DocumentList,DocumentDetail
 __all__+=['DocumentInfo','DocumentList','DocumentDetail']
+
+from .artifact_bundle_v2 import IndexBundleV2,prepare_index_bundle_v2
+__all__+=['IndexBundleV2','prepare_index_bundle_v2']

@@ -15,7 +15,8 @@ def test_preflight_preserves_text_and_copies_scope():
     job=processor();scope=[DOC];excluded=[]
     result=job.process(QUERY,scope_document_ids=scope,exclude_document_ids=excluded,expected_revision=0)
     scope.clear();excluded.append(DOC)
-    assert result.query==QUERY and result.scope_document_ids==(DOC,) and result.exclude_document_ids==()
+    assert result.query==QUERY.strip() and result.raw_query==QUERY
+    assert result.scope_document_ids==(DOC,) and result.exclude_document_ids==()
     assert result.expected_revision==0 and QUERY not in repr(result)
     assert job.process(QUERY).scope_document_ids is None
     assert job.process(QUERY,scope_document_ids=[]).scope_document_ids==()

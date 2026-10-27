@@ -42,8 +42,8 @@ def setup(cfg=None):
 
 def test_query_retains_raw_input_pair_and_stable_terms():
     encoder,dense,sparse=setup();result=encoder.encode(QUERY)
-    assert result.input.kind=='query' and result.input.retrieval_text==QUERY
-    assert result.input.embedding_text=='query: '+QUERY
+    assert result.input.kind=='query' and result.input.retrieval_text==QUERY.strip()
+    assert result.input.embedding_text=='query: '+QUERY.strip()
     assert result.input.embedding_text_sha256!=result.input.retrieval_text_sha256
     assert result.input.knowledge_base_id is None and result.input.source_span is None
     assert result.query_terms==['开关','tc-01','cvr_ltv','0.5'] and result.sparse.term_frequencies['开关']==2

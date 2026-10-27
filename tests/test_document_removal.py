@@ -25,8 +25,9 @@ def test_remove_one_document_preserves_sources_and_old_indexes(setup_job,tmp_pat
     receipt=job.remove_document(info.document_id,expected_revision=1)
     assert receipt.status=='removed' and receipt.previous_active==first.active and receipt.removed_document==info
     assert receipt.active.revision==2 and receipt.active.version.document_count==2
-    assert receipt.active==job.manager.open_active() and receipt.encoding_report.status=='success'
-    assert dense.calls-before==receipt.encoding_report.requests['attempted_requests']
+    assert receipt.active==job.manager.open_active() and receipt.encoding_report is None
+    assert dense.calls==before and receipt.encoding_summary.encoded_chunk_count==0
+    assert receipt.encoding_summary.reused_chunk_count==receipt.active.version.chunk_count
     current=job.manager.bundles.load(receipt.active.version.bundle_id)
     assert {d.id:d.to_dict() for d in current.documents}=={d.id:d.to_dict() for d in old.documents if d.id!=info.document_id}
     assert all(c.source_ref!=info.document_id for c in current.chunks)
@@ -114,7 +115,8 @@ def test_last_document_becomes_active_empty_library(setup_job,tmp_path,path):
     receipt=job.remove_document(uid,expected_revision=1)
     assert receipt.status=='removed' and receipt.active.revision==2 and receipt.previous_active==first.active
     assert receipt.active.version.document_count==receipt.active.version.chunk_count==0
-    assert receipt.encoding_report.status=='empty' and receipt.encoding_report.requests['attempted_requests']==0
+    assert receipt.encoding_report is None
+    assert receipt.encoding_summary.total_chunk_count==receipt.encoding_summary.encoded_chunk_count==0
     assert job.manager.open_active()==receipt.active and job.manager.list_documents().documents==[]
 
 
@@ -160,6 +162,11 @@ def test_current_limits_apply_to_retained_set(setup_job,tmp_path,limit):
     elif limit=='chunks':args['storage']=storage_settings(tmp_path,max_chunks=1)
     else:args['cfg']=config(runtime={'max_inputs':1})
     limited,dense,_=job_for(tmp_path,**args)
+    if limit=='inputs':
+        receipt=limited.remove_document(uid,expected_revision=1)
+        assert receipt.encoding_report is None and receipt.encoding_summary.encoded_chunk_count==0 and dense.calls==0
+        assert job.manager.catalog.read()==receipt.active and receipt.active.revision==first.active.revision+1
+        return
     with pytest.raises(IngestionJobError):limited.remove_document(uid,expected_revision=1)
     assert dense.calls==0 and job.manager.catalog.read()==first.active
 
@@ -179,42 +186,49 @@ def test_broken_old_index_is_never_hidden(setup_job,backend,found):
 def test_failure_retains_exact_observations_and_old_active(setup_job,monkeypatch,caplog,stage):
     import naiyue_rag.ingestion.pipeline as module
     job,*_=setup_job;first=job.run(expected_revision=0);uid=target(job).document_id
-    def fail(*args,**kwargs):raise OSError(PRIVATE)
+    called=[]
+    def fail(*args,**kwargs):called.append(1);raise OSError(PRIVATE)
     objects={'select':(job.manager,'_document_bundle'),'plan':(module,'project_detail'),
         'prepare':(module,'prepare_knowledge_base'),'encode':(job.batch_processor,'process'),
         'bundle':(job.manager.bundles,'save'),'vector':(module.VectorUpserter,'build'),'bm25':(module.BM25Indexer,'build')}
     monkeypatch.setattr(*objects[stage],fail)
+    if stage=='encode':
+        receipt=job.remove_document(uid,expected_revision=1)
+        assert called==[] and receipt.encoding_report is None and receipt.encoding_summary.encoded_chunk_count==0
+        assert receipt.active.version.document_count==first.active.version.document_count-1
+        return
     with pytest.raises(IngestionJobError) as caught:job.remove_document(uid,expected_revision=1)
     error=caught.value
     assert error.stage==stage and error.code==f'ingestion_{stage}_failed' and error.activation_status=='not_attempted'
-    assert (error.encoding_report is not None)==(stage in ('bundle','vector','bm25'))
+    assert error.encoding_report is None
     assert (error.candidate_bundle_id is not None)==(stage in ('vector','bm25'))
     assert job.manager.catalog.read()==first.active and PRIVATE not in caplog.text+str(error)+repr(error)
     assert IngestionJobError.from_dict(json.loads(json.dumps(error.to_dict()))).to_dict()==error.to_dict()
 
 
-def test_dense_failed_report_is_not_lost_in_shared_builder(setup_job,monkeypatch):
+def test_removal_does_not_invoke_a_failing_dense_encoder(setup_job,monkeypatch):
     job,dense,_=setup_job;first=job.run(expected_revision=0);uid=target(job).document_id
+    called=[];before=dense.calls
     def fail(*args,**kwargs):
+        called.append(1)
         report=new_report();report.update(attempted_requests=1,error_code='embedding_connection_failed')
         raise EmbeddingExecutionError('embedding_connection_failed',report)
     monkeypatch.setattr(dense,'encode_batch',fail)
-    with pytest.raises(IngestionJobError) as caught:job.remove_document(uid,expected_revision=1)
-    error=caught.value
-    assert error.stage=='encode' and error.code=='embedding_connection_failed' and error.encoding_report.status=='failed'
-    assert error.encoding_report.requests['attempted_requests']==1 and job.manager.catalog.read()==first.active
+    receipt=job.remove_document(uid,expected_revision=1)
+    assert called==[] and dense.calls==before and receipt.encoding_report is None
+    assert receipt.active.revision==first.active.revision+1
 
 
 def test_revision_race_keeps_winner_and_current_encoding_report(setup_job,tmp_path,monkeypatch):
     job,*_=setup_job;job.run(expected_revision=0);uid=target(job).document_id
-    rival,_,_=job_for(tmp_path,bm25=BM25Settings(1.2,.5));process=job.batch_processor.process;winner=[]
-    def compete(inputs):
-        result=process(inputs);winner.append(rival.run(expected_revision=1));return result
-    monkeypatch.setattr(job.batch_processor,'process',compete)
+    rival,_,_=job_for(tmp_path,bm25=BM25Settings(1.2,.5));activate=job.manager.activate;winner=[]
+    def compete(*args,**kwargs):
+        winner.append(rival.run(expected_revision=1));return activate(*args,**kwargs)
+    monkeypatch.setattr(job.manager,'activate',compete)
     with pytest.raises(IngestionJobError) as caught:job.remove_document(uid,expected_revision=1)
     error=caught.value
     assert error.stage=='activate' and error.code=='catalog_revision_conflict' and error.activation_status=='not_committed'
-    assert error.encoding_report.status=='success' and error.candidate_bundle_id
+    assert error.encoding_report is None and error.candidate_bundle_id
     assert job.manager.catalog.read()==winner[0].active
 
 
@@ -225,7 +239,7 @@ def test_commit_uncertain_requires_catalog_readback(setup_job,monkeypatch):
     with pytest.raises(IngestionJobError) as caught:job.remove_document(uid,expected_revision=1)
     error=caught.value
     assert error.stage=='activate' and error.code=='catalog_commit_uncertain' and error.activation_status=='unknown'
-    assert error.encoding_report.status=='success' and error.candidate_bundle_id
+    assert error.encoding_report is None and error.candidate_bundle_id
     assert job.manager.catalog.read().revision==2
 
 
@@ -238,7 +252,7 @@ def test_unexpected_activation_failure_is_unknown(setup_job,monkeypatch,when):
     monkeypatch.setattr(job.manager,'activate',fail)
     with pytest.raises(IngestionJobError) as caught:job.remove_document(uid,expected_revision=1)
     error=caught.value
-    assert error.stage=='activate' and error.activation_status=='unknown' and error.encoding_report is not None
+    assert error.stage=='activate' and error.activation_status=='unknown' and error.encoding_report is None
     assert job.manager.catalog.read().revision==(2 if when=='after' else 1)
 
 
@@ -251,7 +265,7 @@ def test_finalize_failure_keeps_known_commit(setup_job,monkeypatch,found):
     with pytest.raises(IngestionJobError) as caught:job.remove_document(uid,expected_revision=1)
     error=caught.value
     assert error.stage=='finalize' and error.activation_status==('activated' if found else 'unchanged')
-    assert (error.encoding_report is not None)==found
+    assert error.encoding_report is None and (error.candidate_bundle_id is not None)==found
     assert job.manager.catalog.read().revision==(2 if found else 1)
 
 
@@ -266,8 +280,9 @@ def test_no_active_finalize_failure_remains_not_attempted(setup_job,monkeypatch)
 
 
 def test_control_interrupt_propagates_without_normal_error(setup_job,monkeypatch):
+    import naiyue_rag.ingestion.pipeline as module
     job,*_=setup_job;first=job.run(expected_revision=0);uid=target(job).document_id
     def stop(*args):raise KeyboardInterrupt()
-    monkeypatch.setattr(job.batch_processor,'process',stop)
+    monkeypatch.setattr(module.VectorUpserter,'build',stop)
     with pytest.raises(KeyboardInterrupt):job.remove_document(uid,expected_revision=1)
     assert job.manager.catalog.read()==first.active

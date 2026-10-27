@@ -125,11 +125,12 @@ class QueryPipeline:
                 status='empty_index' if active.version.document_count==0 or docs and not chunks else \
                     'empty_scope' if not docs else 'ready'
             if status=='ready':
-                stage='embedding';value=self.query_encoder.encode(processed.query)
+                stage='embedding';value=self.query_encoder.encode(processed.raw_query)
                 if type(value) is not QueryEncodingResult:raise ValueError()
                 report=EncodingReport.from_dict(value.report.to_dict())
                 encoding=QueryEncodingResult.from_dict(value.to_dict());version=active.version
                 if encoding.input.retrieval_text!=processed.query or encoding.input.query_sha256!=text_sha(processed.query) or \
+                        encoding.raw_query_sha256!=text_sha(processed.raw_query) or \
                         (encoding.input.model_space_id,encoding.input.representation_id,encoding.tokenizer_id,encoding.dimensions)!= \
                         (version.model_space_id,version.representation_id,version.tokenizer_id,version.dimensions):
                     raise QueryJobError(stage,'query_identity_mismatch',active=active)
@@ -137,7 +138,8 @@ class QueryPipeline:
                 self._record(context,stage,dict(adapter_calls=report.requests['dense_calls_started'],
                                                 source_kind=batch['source_kind'],usage=batch['usage']))
             trace=self._finish(context,stage)
-            result=PreparedQuery(status,active,text_sha(processed.query),docs,chunks,encoding,trace)
+            result=PreparedQuery(status,active,text_sha(processed.query),docs,chunks,encoding,trace,
+                raw_query_sha256=text_sha(processed.raw_query))
             try:_json_bytes(result.to_dict(),self.storage_settings.max_bundle_bytes,newline=False)
             except StorageError as error:
                 if error.code=='bundle_limit_exceeded':raise QueryJobError(stage,'query_result_limit',active=active) from None

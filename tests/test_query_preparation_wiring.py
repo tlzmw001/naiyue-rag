@@ -1,5 +1,6 @@
 """Formal preparation through native snapshots, mocked HTTP and a new-process consumer."""
 import json
+import hashlib
 import os
 from pathlib import Path
 import subprocess
@@ -54,12 +55,14 @@ def native_prepare(root,action,mode,empty_scope):
         assert provider.closed
     finally:httpx.HTTPTransport=transport
     assert result.active.to_dict()==job['active'] and manager.catalog.read()==result.active
+    assert result.query_sha256==hashlib.sha256(query.strip().encode()).hexdigest()
+    assert result.raw_query_sha256==hashlib.sha256(query.encode()).hexdigest()
     if empty_scope:assert result.status=='empty_scope'
     elif mode=='zero':assert result.status=='empty_index'
     else:assert result.status=='ready'
     assert len(seen)==(1 if result.status=='ready' else 0)
     if result.status=='ready':
-        assert result.encoding.input.retrieval_text==query and result.encoding.input.embedding_text=='query: '+query
+        assert result.encoding.input.retrieval_text==query.strip() and result.encoding.input.embedding_text=='query: '+query.strip()
         assert result.encoding.report.requests['attempted_requests']==1
         if mode=='all-empty':assert result.encoding.query_terms==[]
         else:assert {'cvr_ltv','0','1','0.5','tc-01'}<=set(result.encoding.query_terms)

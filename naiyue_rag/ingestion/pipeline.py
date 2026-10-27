@@ -7,16 +7,20 @@ from ..core.encoding_settings import EncodingSettings
 from ..core.encoding_report import EncodingReport,ERROR_CODES,_hash
 from ..core.encoded_types import EncodingResult
 from ..core.ingestion_types import IngestionReceipt,RemovalReceipt
+from ..core.ingestion_encoding_summary import IngestionEncodingSummary
 from ..core.errors import IngestionJobError,StorageError,EncodingJobError
 from ..encoding.batch_processor import BatchProcessor
-from ..encoding.input_preparer import prepare_document_encoding_inputs
-from ..storage import (DocumentManager,VectorUpserter,BM25Indexer,prepare_index_bundle,
+from ..encoding.input_preparer import _prepare_document_encoding_inputs
+from ..storage import (DocumentManager,VectorUpserter,BM25Indexer,
                        ChromaSettings,BM25Settings,ActivationReceipt)
+from ..storage.artifact_bundle_v2 import prepare_index_bundle_v2
 from ..storage.version_types import MAX_REVISION
 from .markdown_loader import MarkdownLoader
 from .document_chunker import DocumentChunker
 from .knowledge_preparation import prepare_knowledge_base
 from .file_integrity import plan_ingestion,profiles_match
+from .document_relations import build_document_relations
+from .encoding_reuse import compose_encoding_snapshot
 from ..storage.document_views import _valid_document_id,project_detail
 
 LOGGER=logging.getLogger(__name__)
@@ -54,9 +58,9 @@ class IngestionPipeline:
         if len(documents)>self.settings.max_documents or any(d.metadata['size_bytes']>self.settings.max_file_bytes for d in documents):
             raise StorageError('bundle_limit_exceeded')
 
-    def _inputs(self,documents,chunks):
+    def _inputs(self,documents,chunks,*,job_limits=True):
         if len(chunks)>self.settings.max_chunks:raise StorageError('bundle_limit_exceeded')
-        return prepare_document_encoding_inputs(documents,chunks,self.encoding_settings)
+        return _prepare_document_encoding_inputs(documents,chunks,self.encoding_settings,job_limits=job_limits)
 
     def _fail(self,error,stage,*,report=None,candidate=None,outcome='not_attempted'):
         """Normalize only this boundary; shared callers let this exception propagate."""
@@ -92,17 +96,32 @@ class IngestionPipeline:
         except Exception as error:
             self._fail(error,'activate',report=report,candidate=candidate,outcome='unknown')
 
-    def _build_and_activate(self,documents,*,expected_revision):
+    def _build_and_activate(self,documents,*,expected_revision,base=None,base_bundle_id=None,encode_document_ids=None):
         stage='prepare';report=None;candidate=None
         try:
-            chunks,relations,_=prepare_knowledge_base(documents,self.chunker,
+            encode={d.id for d in documents} if encode_document_ids is None else set(encode_document_ids)
+            reuse={d.id for d in documents}-encode
+            changed=[d for d in documents if d.id in encode]
+            chunks,_,_=prepare_knowledge_base(changed,self.chunker,
                 text_mode=self.encoding_settings.representation.document_text_mode)
-            inputs=self._inputs(documents,chunks)
-            stage='encode';result=self.batch_processor.process(inputs)
-            if type(result) is not EncodingResult:raise ValueError()
-            report=EncodingReport.from_dict(result.report.to_dict())
-            if report.status not in ('success','empty') or report.paired_input_count!=len(chunks):raise ValueError()
-            stage='bundle';bundle=prepare_index_bundle(documents,chunks,relations,result,
+            inputs=self._inputs(changed,chunks)
+            if reuse:
+                if base is None:raise ValueError()
+                chunks.extend(copy.deepcopy(c) for c in base.chunks if c.source_ref in reuse)
+            chunks.sort(key=lambda c:(c.source_ref,c.metadata['chunk_index']))
+            if len(chunks)>self.settings.max_chunks:raise StorageError('bundle_limit_exceeded')
+            _prepare_document_encoding_inputs(documents,chunks,self.encoding_settings,job_limits=False)
+            relations=build_document_relations(documents)
+            stage='encode';result=None
+            if inputs:
+                result=self.batch_processor.process(inputs)
+                if type(result) is not EncodingResult:raise ValueError()
+                report=EncodingReport.from_dict(result.report.to_dict())
+                if report.status!='success' or report.paired_input_count!=len(inputs):raise ValueError()
+            stage='bundle';snapshot,summary=compose_encoding_snapshot(documents,chunks,result,base=base,
+                base_bundle_id=base_bundle_id,reuse_document_ids=reuse,knowledge_base_id=self.settings.knowledge_base_id,
+                encoding_settings=self.encoding_settings,tokenizer_id=self.tokenizer_id)
+            bundle=prepare_index_bundle_v2(documents,chunks,relations,snapshot,summary,
                 knowledge_base_id=self.settings.knowledge_base_id,encoding_settings=self.encoding_settings,
                 ingestion_settings=self.ingestion_settings)
             saved=self.manager.bundles.save(bundle)
@@ -112,7 +131,7 @@ class IngestionPipeline:
             stage='bm25';BM25Indexer(self.settings,self.bm25_settings).build(candidate)
         except Exception as error:self._fail(error,stage,report=report,candidate=candidate)
         activated=self._activate_existing(candidate,expected_revision=expected_revision,report=report,candidate=candidate)
-        return activated,report,candidate
+        return activated,report,candidate,summary
 
     def run(self,*,expected_revision,force=False):
         stage='validate'
@@ -128,17 +147,25 @@ class IngestionPipeline:
             documents=plan.merged_documents;self._source_limits(documents)
             counts=[len(plan.added_ids),len(plan.updated_ids),len(plan.unchanged_ids),len(plan.retained_ids)]
             if sum(counts)!=len(documents):raise IngestionJobError(stage,'ingestion_plan_failed')
+            encode=plan.encode_document_ids;reuse=plan.reuse_document_ids
+            if type(encode) is not list or type(reuse) is not list or \
+                    encode!=sorted(set(encode)) or reuse!=sorted(set(reuse)) or set(encode)&set(reuse) or \
+                    set(encode+reuse)!={d.id for d in documents}:
+                raise IngestionJobError(stage,'ingestion_plan_failed')
             if plan.reuse_active:
-                stage='prepare';self._inputs(documents,base.chunks)
+                stage='prepare';self._inputs(documents,base.chunks,job_limits=False)
             elif active is not None:
                 stage='select';self._audit_base(active)
         except Exception as error:self._fail(error,stage)
         # These methods own their error stage/report; do not wrap them as select/plan.
-        report=None;candidate=None
+        report=None;candidate=None;summary=None
         if plan.reuse_active:
             activated=self._activate_existing(active.version.bundle_id,expected_revision=expected_revision)
-        else:activated,report,candidate=self._build_and_activate(documents,expected_revision=expected_revision)
-        try:return IngestionReceipt(activated.status,activated.active,*counts,report)
+            summary=IngestionEncodingSummary(active.version.chunk_count,0,active.version.chunk_count,None)
+        else:
+            activated,report,candidate,summary=self._build_and_activate(documents,expected_revision=expected_revision,
+                base=base,base_bundle_id=None if active is None else active.version.bundle_id,encode_document_ids=plan.encode_document_ids)
+        try:return IngestionReceipt(activated.status,activated.active,*counts,report,encoding_summary=summary)
         except Exception as error:
             self._fail(error,'finalize',report=report,candidate=candidate,outcome=activated.status)
 
@@ -158,17 +185,19 @@ class IngestionPipeline:
             documents=[d for d in base.documents if d.id!=document_id]
             self._source_limits(documents)
             if info is None:
-                stage='prepare';self._inputs(documents,base.chunks)
+                stage='prepare';self._inputs(documents,base.chunks,job_limits=False)
             else:
                 stage='select';self._audit_base(active)
         except Exception as error:self._fail(error,stage)
-        report=None;candidate=None
+        report=None;candidate=None;summary=None
         if info is None:
             activated=self._activate_existing(active.version.bundle_id,expected_revision=expected_revision)
-        else:activated,report,candidate=self._build_and_activate(documents,expected_revision=expected_revision)
+        else:
+            activated,report,candidate,summary=self._build_and_activate(documents,expected_revision=expected_revision,
+                base=base,base_bundle_id=active.version.bundle_id,encode_document_ids=[])
         try:
             if info is not None and activated.status!='activated':raise ValueError()
             return RemovalReceipt('not_found' if info is None else 'removed',document_id,
-                                  active,activated.active,info,report)
+                                  active,activated.active,info,report,encoding_summary=summary)
         except Exception as error:
             self._fail(error,'finalize',report=report,candidate=candidate,outcome=activated.status)

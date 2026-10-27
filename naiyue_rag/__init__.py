@@ -55,3 +55,8 @@ from .core.evidence_settings import EvidenceSettings,load_evidence_settings
 from .response.builder import ResponseBuilder,EvidenceError
 from .query.retrieval_pipeline import RetrievalPipeline
 __all__+=['EvidenceSettings','load_evidence_settings','ResponseBuilder','EvidenceError','RetrievalPipeline']
+
+from .core.encoding_snapshot import StoredEncodedRecord,EncodingSnapshot
+from .core.ingestion_encoding_summary import IngestionEncodingSummary
+from .storage.artifact_bundle_v2 import IndexBundleV2,prepare_index_bundle_v2
+__all__+=['StoredEncodedRecord','EncodingSnapshot','IngestionEncodingSummary','IndexBundleV2','prepare_index_bundle_v2']
