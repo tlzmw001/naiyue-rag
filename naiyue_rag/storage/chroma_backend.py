@@ -3,9 +3,11 @@ from contextlib import contextmanager
 from importlib import metadata
 import logging
 import os
+from threading import Lock
 from ..core.errors import StorageError
 
 SDK_VERSION='1.5.9'
+_CLIENT_LOCK=Lock()
 
 
 def new_client(path,project_root):
@@ -39,28 +41,30 @@ def call(method,*,code='chroma_read_failed',**kwargs):
 
 @contextmanager
 def open_collection(path,project_root,name,identity,batch_size,*,create=False):
-    client=new_client(path,project_root);failed=False
-    try:
-        if create:
-            maximum=call(client.get_max_batch_size)
-            if type(maximum) is not int or maximum<batch_size:raise StorageError('chroma_batch_limit')
-            collection=call(client.create_collection,code='chroma_open_failed',name=name,
-                metadata=identity,embedding_function=None,configuration={'hnsw':{'space':'cosine'}})
-        else:
-            collection=call(client.get_collection,code='chroma_open_failed',name=name,embedding_function=None)
+    # Chroma 1.5.9 shares an unsynchronized per-path System cache between threads.
+    with _CLIENT_LOCK:
+        client=new_client(path,project_root);failed=False
         try:
-            configuration=collection.configuration
-            if collection.metadata!=identity or configuration['hnsw']['space']!='cosine' or \
-                    configuration.get('embedding_function') is not None:
-                raise StorageError('chroma_identity_mismatch')
-        except StorageError:raise
-        except Exception:raise StorageError('chroma_identity_mismatch') from None
-        yield collection
-    except BaseException:
-        failed=True
-        raise
-    finally:
-        try:client.close()
-        except Exception:
-            if failed:logging.getLogger(__name__).error('chroma_close_failed code=chroma_close_failed')
-            else:raise StorageError('chroma_close_failed') from None
+            if create:
+                maximum=call(client.get_max_batch_size)
+                if type(maximum) is not int or maximum<batch_size:raise StorageError('chroma_batch_limit')
+                collection=call(client.create_collection,code='chroma_open_failed',name=name,
+                    metadata=identity,embedding_function=None,configuration={'hnsw':{'space':'cosine'}})
+            else:
+                collection=call(client.get_collection,code='chroma_open_failed',name=name,embedding_function=None)
+            try:
+                configuration=collection.configuration
+                if collection.metadata!=identity or configuration['hnsw']['space']!='cosine' or \
+                        configuration.get('embedding_function') is not None:
+                    raise StorageError('chroma_identity_mismatch')
+            except StorageError:raise
+            except Exception:raise StorageError('chroma_identity_mismatch') from None
+            yield collection
+        except BaseException:
+            failed=True
+            raise
+        finally:
+            try:client.close()
+            except Exception:
+                if failed:logging.getLogger(__name__).error('chroma_close_failed code=chroma_close_failed')
+                else:raise StorageError('chroma_close_failed') from None

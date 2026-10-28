@@ -1,7 +1,9 @@
 """Formal Chroma contracts with deterministic IO/SDK failures, no native import."""
 import copy
+from concurrent.futures import ThreadPoolExecutor
 import json
 from pathlib import Path
+from threading import Event
 import pytest
 from naiyue_rag.storage import (ChromaSettings,load_chroma_settings,VectorUpserter,ChromaStore,BundleStore)
 from naiyue_rag.core.errors import SettingsError,StorageError
@@ -72,6 +74,33 @@ def setup_index(tmp_path,monkeypatch):
     args=(cfg,ChromaSettings('knowledge_hub',2))
     writer=VectorUpserter(*args,project_root=tmp_path);reader=ChromaStore(*args,project_root=tmp_path)
     return writer,reader,saved.bundle_id,bundle,events,fault,cfg
+
+
+def test_collection_lifetime_is_serialized_across_threads(tmp_path,monkeypatch):
+    import naiyue_rag.storage.chroma_backend as backend
+    events=[];first_entered=Event();release_first=Event();second_started=Event();second_entered=Event()
+    identity={'bundle_id':'synthetic'}
+    class Client:
+        metadata=identity
+        configuration={'hnsw':{'space':'cosine'},'embedding_function':None}
+        def get_collection(self,*,name,embedding_function):return self
+        def close(self):events.append('close')
+    def new_client(path,project_root):
+        events.append('open');return Client()
+    monkeypatch.setattr(backend,'new_client',new_client)
+    def first():
+        with backend.open_collection(tmp_path,tmp_path,'knowledge_hub',identity,2):
+            first_entered.set();assert release_first.wait(5)
+    def second():
+        second_started.set()
+        with backend.open_collection(tmp_path,tmp_path,'knowledge_hub',identity,2):second_entered.set()
+    with ThreadPoolExecutor(max_workers=2) as workers:
+        left=workers.submit(first);assert first_entered.wait(5)
+        right=workers.submit(second);assert second_started.wait(5)
+        try:assert not second_entered.wait(1)
+        finally:release_first.set()
+        left.result(timeout=5);right.result(timeout=5)
+    assert events==['open','close','open','close']
 
 
 def test_formal_roundtrip_repeat_and_isolation(setup_index):
