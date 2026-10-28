@@ -41,6 +41,29 @@ def smoke(root,expected_version=None):
     def run(*args,input=None):
         result=subprocess.run([str(command),*args],cwd=root,env=environment,input=input,encoding='utf-8',
             capture_output=True,timeout=90)
+        if result.returncode and 'chroma_open_failed' in result.stdout:
+            from chromadb.config import Settings
+            databases=list(root.rglob('chroma.sqlite3'))
+            print(f'chroma_smoke_diagnostic root_length={len(str(root))} '
+                  f'databases={len(databases)}',file=sys.stderr)
+            for database in databases:
+                directory=database.parent
+                print(f'chroma_smoke_diagnostic path_length={len(str(directory))} '
+                      f'database_length={len(str(database))}',file=sys.stderr)
+                client=None
+                try:
+                    client=chromadb.PersistentClient(path=str(directory),settings=Settings(
+                        anonymized_telemetry=False,chroma_api_impl='chromadb.api.rust.RustBindingsAPI'))
+                    client.get_collection('knowledge_hub',embedding_function=None)
+                    print('chroma_smoke_diagnostic direct_open=passed',file=sys.stderr)
+                except Exception as error:
+                    print(f'chroma_smoke_diagnostic direct_open={type(error).__name__} '
+                          f'detail={str(error)[:500]}',file=sys.stderr)
+                finally:
+                    if client is not None:
+                        try:client.close()
+                        except Exception as error:
+                            print(f'chroma_smoke_diagnostic close={type(error).__name__}',file=sys.stderr)
         assert result.returncode==0, result.stdout+result.stderr
         assert 'SYNTHETIC_MODEL_KEY' not in result.stdout+result.stderr
         return result.stdout
