@@ -1,6 +1,24 @@
 # 交接记录
 
+2026-10-27：0.1.0 最终本机预检通过。MIT 入包后的源码全量 `.venv/bin/python -m pytest -q tests --tb=short` 为 `2381 passed in 481.54s`；最终 wheel/sdist `scripts/inspect_distribution.py` 与 `twine check --strict` 均通过，发行文件分别含 MIT LICENSE，wheel 含 `nyr-embedding-audit`。新虚拟环境通过最终 wheel 在线安装、`pip check` 和离开源码目录的 `scripts/validate_candidate.py` smoke：`status=passed`、`installed_version=0.1.0`、2 份合成文档、revision 1、2 条查询证据、真实厂商请求 0。Git 改动为明确审查过的首版 63 文件；模型 GGUF 保持在被忽略的 `dist/model-assets/`。下面较早的许可证门禁阻塞记录是选择 MIT 之前的历史快照，当前 `version --tag v0.1.0` 已通过。下一步暂存审计、提交推送 main、等待远端三平台 CI 后再推标签。
+
+2026-10-27：用户选定项目代码 MIT 许可证，并确认 PyPI 首发账户配置已由其完成。根目录`LICENSE`、pyproject.toml SPDX 元数据和 MANIFEST 已接线；`scripts/release_tools.py version --tag v0.1.0`通过，发布专项 27 passed。含许可证的 wheel/sdist 已重建并通过发行内容检查与 Twine 严格检查；两种包均含 MIT 许可，模型 GGUF 仍仅在被 Git 忽略的 Release 附件目录。下一步重新运行完整回归与最终干净安装验收，然后提交/push main，等三平台 CI 成功后推送标签并核对 PyPI 公开安装及模型 Release。
+
+2026-10-27：0.1.0 首发准备中。用户明确授权提交、push、打 `v0.1.0` 标签并发布 PyPI；唯一源码版本已从 `0.1.0.dev0` 改为 `0.1.0`。本机 `.venv/bin/python -m pytest -q tests --tb=short` 为 `2381 passed in 459.60s`；同版本 wheel/sdist 已通过内容审计与 `twine check --strict`，离开源码目录的干净在线安装 smoke 返回 `status=passed`、`installed_version=0.1.0`、2 份合成文档、revision 1、2 条查询证据，`pip check` 无破损依赖。GitHub 仓库 `tlzmw001/naiyue-rag` 的 `pypi` environment 已建成并回读确认只允许 `v*` 标签。项目代码许可证仍待用户选择，`scripts/release_tools.py version --tag v0.1.0` 当前明确返回 `release_license_missing`；PyPI 网页要求用户完成新设备邮件登录确认，pending publisher 尚未配置。尚未 commit/push/tag/上传，当前预构建制品不作为最终发行包；待许可证入包后须重新构建并通过发布门禁，再等远端分支 CI 全绿后推送标签。
+
+2026-10-27：用户确认公司 Linux 32 核／64 GB／无 GPU，可访问 PyPI 与 GitHub Release；本地模型交付改为 Python 分发包加同版本模型附件。已将无截断审计入口装入 wheel（`nyr-embedding-audit`），准备受 Git 忽略的 Qwen Q8_0 GGUF Release 附件及来源／许可／摘要清单；对应 Linux 命令见[本地 Embedding 操作说明](local-embedding.md)。Mac 用同字节 GGUF 在隔离 Ollama 模型目录重导入，兼容接口返回 1024 维，向量与原模型实测一致，原生超窗探针仍返回 400；从新 wheel 在干净虚拟环境在线安装并离开源码目录完成原生摄取／查询 smoke，`pip check` 无破损依赖。本轮全量 `.venv/bin/python -m pytest -q tests --tb=short` 为 `2381 passed in 488.17s`，正式 `.venv/bin/python scripts/run_formal_tests.py` 为 `1710 passed in 407.99s`；wheel/sdist 检查、干净安装 smoke、文档 shell 块语法和 `git diff --check` 均通过。Linux 上安装、CPU 吞吐与真实材料输入分布尚未验收；当前版本仍为 0.1.0.dev0，项目许可证、PyPI publisher、远端 CI、实际标签／PyPI／GitHub Release 均未完成。标签工作流只发布 Python 包；模型 Release 附件目前需在 PyPI 公开验证后按[发布文档](publishing.md)另行创建。下方旧验收压缩包只是前一阶段的本地候选，不是现行 Linux 联网安装路径。
+
+2026-10-27：用户授权推进[Spec0058](specs/0058-local-embedding-mac-linux-plan.md)本地 Embedding。Mac 已安装 Ollama 0.40.11 并固定 Qwen3-Embedding-0.6B digest；现有 OpenAI 兼容 Provider 真实请求通过。超窗合成输入证实兼容接口静默截断，因此新增只输出汇总的无截断输入审计工具及[Linux 操作说明](local-embedding.md)。5 份合成文档的 12 条输入原生无截断探针通过，正式 `nyr` 首次/重复摄取、查询、停服失败保留活动版本、恢复后增量摄取均通过；真实配置/旧知识库不变。全量测试 `2381 passed`、正式回归 `1710 passed`、wheel/sdist 构建及分发包检查通过，`pip check` 无破损依赖。供用户转移到 Linux 的本地验收压缩包位于 `dist/naiyue-rag-local-embedding-acceptance-20261027.tar.gz`（SHA-256 `3839834eb955831f4ffa9494ab747d112a711fc8710681921babe09cb84baf8b`），已在隔离目录解包核对审计入口与配置模板；该文件未纳入 Git。Linux 无 GPU 32 核/64 GB 开发机由用户执行验收并回传脱敏汇总；尚无该机器的真实资料、吞吐或内存证据。本片未提交/push或发布。以下 Spec0057 的发布候选记录保持独立。
+
+2026-10-27：Spec0057本地验收完成。README重写为136行项目介绍；标签发布/OIDC/同一制品三平台验收/公开摘要和pip验证已接线，工作流actionlint与Twine严格检查通过，完整2375 passed in456.92s，发布专项27通过。新候选在/tmp/nyr-tag-release-dist，已从新建纯运行环境验证真实nyr原生闭环；源版本保持0.1.0.dev0。待用户一次性配置PyPI pending publisher（tlzmw001/naiyue-rag、publish-pypi.yml、pypi）和GitHub环境，确定正式版本与许可证，再确认并执行真实提交/标签/发布；本轮未写外部账户、未提交/push或发布。
+
+2026-10-26最新任务：用户要求README重写为项目介绍，并用标签触发PyPI发布，见Spec0057。README已精简为用途/能力/安装/配置/命令/边界/文档入口；发布工作流按版本和许可证门禁→单次构建→同一制品三平台验收→父工作流独立OIDC发布→PyPI摘要/公共安装验证接线。当前源码仍0.1.0.dev0，未选择许可证、未设置外部账户/环境、未提交或push/打标签。此前2352/1681及制品摘要为Spec0056历史候选证据，新README会改变发行包摘要；本轮验收另记录。
+
+2026-10-26当前：用户已授权首版5片实施。0052统一配置全量2280通过，0053模型注册表/运行时全量2311通过；0054本机HTTP与0055 nyr/chat已接线并通过相关测试，0056 wheel/sdist构建与干净环境安装成功，macOS26.4 arm64/Python3.12.14安装入口原生Chroma/BM25/SQLite闭环通过（2文档、revision1、2条证据、3次合成本机模型请求、真实厂商0/权重下载0）。最终生产源码完整2352 passed in479.72s，独立无私有数据源码副本1681 passed in422.97s；之后新增归档工具回归单项，发行合同5 passed补验通过，compileall/pip check/diff检查通过；三平台CI已编写未push执行，不声称Linux/Windows已通过。Windows目录同步差异由用户明确接受，文件fsync/SQLite/审计保持。尚未提交/push/PyPI发布，真实.env/配置/知识库不变；下列设计阶段状态为历史记录，以此条为准。
+
 ## 当前摘要
+
+- 2026-10-26用户确认先做能用的首版本机服务，不考虑其他机器连接。已记录[Spec0051](specs/0051-first-release-local-service-plan.md)设计草案与5片建议：统一配置/目录→模型表/凭据→本机服务→nyr/chat→打包/三平台。产品约束沿本轮确认：全部正式功能依赖默认安装、权重另行准备，macOS仅arm64；config.yaml集中运行配置、models.json可直接Key或环境变量；默认Path.home()/.naiyue-rag，根目录与单路径覆盖；chat自动起服务，一个终端可用，退出只清理本次实例。尚无产品源码/真实配置/依赖修改、服务启动或发布；PyPI发行文件只读预检不当三平台通过。当前唯一下一步为按0051细化第一片实施Spec，不重问已定产品方向；发布身份/许可证和最终上传需另行确认。
 
 - 2026-10-26用户已授权提交/push。提交前安全/架构复核完成；补修重复摄取与未命中移除错误消耗全快照作业数量限额，先2项红灯、相关131 passed in36.68s，复审关闭。修复后最终完整2235 passed in437.84s（0:07:17），compileall/pip check/diff检查通过。三项优化的7片全部实现/接线/本地验收；新任务中文v2/旧包v1、变化文档编码、完整V2快照与本次账务分离、移除零编码及原生增量/全量对照保持。提交范围为62个已核对源码/测试/Spec/文档文件，不含真实配置、依赖或用户数据；分支main、目标origin/main，仓库未设GitHub Actions工作流，提交与远端结果以Git为准。6.5是用户亲自在IDE走正常查询及预算异常的学习练习，不是本轮提交门禁；本人调试证据仍待，不自动扩Agent/MCP。以下为此前推进记录，以首条为当前状态。
 

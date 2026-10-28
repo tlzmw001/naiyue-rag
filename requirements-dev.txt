@@ -1,0 +1,7 @@
+# Source regression includes retained historical experiment tests.
+-e .
+pytest==9.1.1
+build==1.6.1
+wheel==0.46.3
+llama-index-core==0.14.25
+twine==6.2.0

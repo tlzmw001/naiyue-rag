@@ -1,0 +1,13 @@
+include pyproject.toml packaging_support.py README.md LICENSE
+recursive-include naiyue_rag *.py
+include naiyue_rag/resources/config.yaml naiyue_rag/resources/models.json
+exclude naiyue_rag/a2_snapshot.py naiyue_rag/bootstrap.py naiyue_rag/chroma_store.py naiyue_rag/retrieval.py naiyue_rag/tracing.py
+prune tests
+prune experiments
+prune research
+prune examples
+prune data
+prune docs
+prune scripts
+prune .github
+global-exclude __pycache__ *.py[cod] .env .env.*

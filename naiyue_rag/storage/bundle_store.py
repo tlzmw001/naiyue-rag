@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 import re
 import stat
+import sys
+import logging
 import uuid
 from ..core.errors import StorageError,SettingsError
 from ..core.storage_settings import validate_storage_settings
@@ -138,6 +140,12 @@ class BundleStore:
             if fd is not None:os.close(fd)
 
     def _sync_directory(self,path):
+        if sys.platform=='win32':
+            path=Path(path)
+            if not path.is_dir() or any(p.is_symlink() for p in (path,*path.parents)):
+                raise StorageError('bundle_path_invalid')
+            logging.getLogger(__name__).info('directory_durability_limited code=directory_sync_unavailable platform=windows')
+            return
         fd=os.open(path,os.O_RDONLY|getattr(os,'O_DIRECTORY',0)|getattr(os,'O_NOFOLLOW',0))
         try:os.fsync(fd)
         finally:os.close(fd)

@@ -1,5 +1,25 @@
 # 阶段 Spec
 
+## 本地 Embedding（Mac 已验证，Linux 待验收）
+
+[Spec0058](0058-local-embedding-mac-linux-plan.md)：复用现有 OpenAI 兼容 Provider 接入 Ollama `qwen3-embedding:0.6b`；Mac 上真实模型与正式 `nyr` 合成闭环已通过，并实测兼容接口超窗会静默截断。Linux 无 GPU 开发机按[操作说明](../local-embedding.md)由用户执行输入审计、无截断探针与实际资料验收；不把 Mac 结果当 Linux 性能证明。
+
+## 项目介绍与标签发布
+
+[Spec0057](0057-project-readme-and-tag-publishing.md)：README改为面向使用者的项目介绍；vX.Y.Z标签触发同一制品三平台验收、OIDC上传和公开安装复核。工作流及本地验收已完成（完整2375通过），尚未配置外部账户或推送标签；远端OIDC/平台/公开安装待真实发布验收。PyPI/GitHub一次性字段见[发布文档](../publishing.md)。
+
+## 当前规划：首版本机服务与pip安装
+
+[Spec0051：首版本机服务、统一配置与pip安装计划](0051-first-release-local-service-plan.md)记录用户已确认的产品范围：全部功能依赖一次安装、模型文件另行准备；统一主配置与models.json；用户目录初始化、数据根目录加单项覆盖；nyr本机服务与nyr chat自动启动/所有权退出。不做远程访问、Agent或前端。用户已授权5片连续实施；统一配置、模型运行时、服务和CLI已接线，本地发行物合成原生闭环已通过，远端三平台CI待验，尚未发布。下文7片优化为已经完成的独立历史交付。
+
+| 实施Spec | 范围 | 证据状态 |
+|---|---|---|
+| [0052](0052-unified-configuration-and-initialization.md) | 统一配置/路径/初始化 | 本片全量2280通过 |
+| [0053](0053-model-registry-and-runtime.md) | models.json/凭据/实际运行时 | 本片全量2311通过 |
+| [0054](0054-local-http-service.md) | 本机HTTP及认证/预算 | HTTP原链及错误测试通过 |
+| [0055](0055-nyr-cli-and-chat-lifecycle.md) | 服务启动/复用/实例所有权 | 真实子进程与安装入口闭环通过 |
+| [0056](0056-package-and-platform-validation.md) | 构建/干净安装/平台 | macOS arm64原生smoke通过，远端CI待验 |
+
 ## 2026-10-26：三项优化的7个分片（均已实现/接线/本地验收）
 
 用户要求先依次写Spec、讨论实际决策，再逐片实施，后进一步授权连续完成全部7片；D1/D2/D3均已确认。各片均先红后绿，第7片最终完整2235 passed in437.84s（0:07:17），不自动扩Agent/MCP。下表完整结果为对应片的实际历史运行，不累计推算。

@@ -1,0 +1,4 @@
+# Local HTTP adapter; no upgrades to existing SDK/runtime versions.
+fastapi==0.162.0
+starlette==1.10.0
+uvicorn==0.54.0

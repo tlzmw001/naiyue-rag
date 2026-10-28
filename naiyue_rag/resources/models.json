@@ -1,0 +1,39 @@
+{
+  "config_version": 1,
+  "models": {
+    "embedding": {
+      "kind": "embedding",
+      "provider": "openai_compatible",
+      "base_url": "https://open.bigmodel.cn/api/paas/v4/",
+      "model": "embedding-3",
+      "expected_dimensions": 2048,
+      "request_dimensions": null,
+      "model_revision": null,
+      "allowed_response_models": ["embedding-3"],
+      "api_key_env": "NAIYUE_RAG_ZHIPU_API_KEY"
+    },
+    "reranker": {
+      "kind": "chat",
+      "provider": "openai_compatible",
+      "base_url": "https://open.bigmodel.cn/api/paas/v4/",
+      "model": "glm-5.2",
+      "api_key_env": "NAIYUE_RAG_ZHIPU_API_KEY",
+      "timeout_seconds": 30,
+      "deadline_seconds": 60,
+      "max_response_bytes": 262144,
+      "max_output_tokens": 4096,
+      "temperature": 0,
+      "extra_body": {"thinking": {"type": "disabled"}}
+    },
+    "local-reranker": {
+      "kind": "cross_encoder",
+      "model_id": "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1",
+      "model_revision": "1427fd652930e4ba29e8149678df786c240d8825",
+      "model_path": "models/mmarco-mMiniLMv2-L12-H384-v1",
+      "device": "cpu",
+      "batch_size": 4,
+      "max_pair_tokens": 512,
+      "max_model_bytes": 1000000000
+    }
+  }
+}

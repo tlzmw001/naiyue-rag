@@ -18,3 +18,10 @@ logs/
 
 # Only the empty credential template may be versioned.
 !/.env.example
+
+# Local distribution candidates and build metadata.
+/build/
+/dist/
+/*.egg-info/
+/.installed-venv/
+/.public-venv/

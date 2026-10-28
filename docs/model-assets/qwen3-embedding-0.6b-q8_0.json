@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "asset_name": "Qwen3-Embedding-0.6B-Q8_0.gguf",
+  "size_bytes": 639150592,
+  "sha256": "06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439",
+  "upstream_model": "Qwen/Qwen3-Embedding-0.6B-GGUF",
+  "upstream_revision": "370f27d7550e0def9b39c1f16d3fbaa13aa67728",
+  "upstream_file": "https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF/resolve/370f27d7550e0def9b39c1f16d3fbaa13aa67728/Qwen3-Embedding-0.6B-Q8_0.gguf",
+  "license": "Apache-2.0",
+  "license_file": "Qwen3-Embedding-0.6B-Q8_0.LICENSE.txt",
+  "ollama_import": "FROM <absolute path to verified GGUF>; ollama create qwen3-embedding:0.6b -f Modelfile",
+  "mac_imported_ollama_digest": "8b752ab34efb5f17a84567801ec213e5d2c2da504b5501775cec3588258cc13d"
+}

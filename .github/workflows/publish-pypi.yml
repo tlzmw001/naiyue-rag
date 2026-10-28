@@ -1,0 +1,72 @@
+name: Publish to PyPI
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+concurrency:
+  group: pypi-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --no-cache-dir build==1.6.1
+      - name: Require a matching stable tag, declared license and main history
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python scripts/release_tools.py version --tag "$RELEASE_TAG"
+          git merge-base --is-ancestor HEAD origin/main
+  validate:
+    needs: [guard]
+    uses: ./.github/workflows/package-validation.yml
+    with:
+      release-tag: ${{ github.ref_name }}
+  publish:
+    needs: [validate]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/project/naiyue-rag/
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: distributions
+          path: dist/
+      - name: Publish the validated distributions with OIDC
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        with:
+          packages-dir: dist/
+  verify-public:
+    needs: [validate,publish]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PYTHONUTF8: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: distributions
+          path: dist/
+      - run: python -m pip install --no-cache-dir build==1.6.1
+      - name: Verify PyPI filenames and SHA256 against the tested artifacts
+        run: python scripts/release_tools.py verify-index --dist dist --version "${{ needs.validate.outputs.version }}" --index-url https://pypi.org/pypi --timeout-seconds 180
+      - name: Install from public PyPI and exercise the installed CLI
+        run: python scripts/validate_candidate.py --package-version "${{ needs.validate.outputs.version }}" --expected-version "${{ needs.validate.outputs.version }}" --index-url https://pypi.org/simple --venv .public-venv

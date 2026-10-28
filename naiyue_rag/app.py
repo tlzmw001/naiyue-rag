@@ -112,3 +112,6 @@ def main(argv=None):
     except Exception:
         logging.getLogger(__name__).error('app_failed code=app_failed')
         print(json.dumps(dict(error=dict(code='app_failed'))));return 2
+
+
+if __name__=='__main__':raise SystemExit(main())

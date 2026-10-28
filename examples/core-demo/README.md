@@ -9,9 +9,9 @@
 在仓库根目录执行（会调用所配置的真实模型；不会自动下载本地模型）：
 
 ```bash
-.venv/bin/python -m naiyue_rag --config examples/core-demo/app.example.yaml ingest --expected-revision 0
-.venv/bin/python -m naiyue_rag --config examples/core-demo/app.example.yaml documents
-.venv/bin/python -m naiyue_rag --config examples/core-demo/app.example.yaml query --expected-revision 1 --query '移除折扣开关需要参考哪些历史需求和用例？'
+.venv/bin/python -m naiyue_rag.app --config examples/core-demo/app.example.yaml ingest --expected-revision 0
+.venv/bin/python -m naiyue_rag.app --config examples/core-demo/app.example.yaml documents
+.venv/bin/python -m naiyue_rag.app --config examples/core-demo/app.example.yaml query --expected-revision 1 --query '移除折扣开关需要参考哪些历史需求和用例？'
 ```
 
 第一次成功摄取后 revision 通常为 1；以后从 documents 的实际返回取得 revision，不能反复用 0。重复且无变化的摄取复用旧版本，不重复编码。产物在本示例 `data/`，受 Git 忽略，不能把未克隆的产物视为存在。
@@ -71,7 +71,7 @@
 已摄取同一示例知识库后，切换查询后端：
 
 ```bash
-.venv/bin/python -m naiyue_rag --config examples/core-demo/app-cross-encoder.example.yaml \
+.venv/bin/python -m naiyue_rag.app --config examples/core-demo/app-cross-encoder.example.yaml \
   query --expected-revision 1 --query '移除折扣开关需要参考哪些历史需求和用例？'
 ```
 
