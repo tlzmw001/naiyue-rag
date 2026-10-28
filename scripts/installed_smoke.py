@@ -136,6 +136,8 @@ def smoke(root,expected_version=None):
                         assert service.poll() is None and time.monotonic()<deadline
                         time.sleep(.05)
                 rendered=run('chat',input='feature_x threshold\n/exit\n')
+                if '终端检索' not in rendered or 'feature_x' not in rendered:
+                    print(f'chat_smoke_diagnostic rendered={rendered[:1000]!r}',file=sys.stderr)
                 assert '终端检索' in rendered and 'feature_x' in rendered
                 assert client.health()==health and service.poll() is None
                 service.send_signal(signal.CTRL_BREAK_EVENT if os.name=='nt' else signal.SIGINT)
