@@ -2,7 +2,6 @@
 from contextlib import contextmanager
 from importlib import metadata
 import logging
-import os
 from threading import Lock
 from ..core.errors import StorageError
 
@@ -22,21 +21,13 @@ def new_client(path,project_root):
             anonymized_telemetry=False,chroma_api_impl='chromadb.api.rust.RustBindingsAPI')
     except Exception:raise StorageError('chroma_environment_invalid') from None
     try:return chromadb.PersistentClient(path=str(path),settings=settings)
-    except Exception as error:
-        if os.environ.get('NYR_NATIVE_DIAGNOSTICS')=='1':
-            logging.getLogger(__name__).error('chroma_diagnostic phase=client type=%s detail=%s',
-                type(error).__name__,str(error)[:1000])
-        raise StorageError('chroma_open_failed') from None
+    except Exception:raise StorageError('chroma_open_failed') from None
 
 
 def call(method,*,code='chroma_read_failed',**kwargs):
     try:return method(**kwargs)
     except StorageError:raise
-    except Exception as error:
-        if code=='chroma_open_failed' and os.environ.get('NYR_NATIVE_DIAGNOSTICS')=='1':
-            logging.getLogger(__name__).error('chroma_diagnostic phase=collection type=%s detail=%s',
-                type(error).__name__,str(error)[:1000])
-        raise StorageError(code) from None
+    except Exception:raise StorageError(code) from None
 
 
 @contextmanager

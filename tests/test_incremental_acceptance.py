@@ -141,8 +141,7 @@ from test_incremental_acceptance import native_acceptance
 native_acceptance(Path(sys.argv[2]),sys.argv[3],sys.argv[4])
 '''
     child=subprocess.run([sys.executable,'-I','-c',script,str(Path(__file__).resolve().parents[1]),str(root),mode,policy],
-        cwd=root,env={'HOME':str(root),'PATH':os.defpath,'OMP_NUM_THREADS':'1','NYR_NATIVE_DIAGNOSTICS':'1'},
-        capture_output=True,text=True,timeout=120)
+        cwd=root,env={'HOME':str(root),'PATH':os.defpath,'OMP_NUM_THREADS':'1'},capture_output=True,text=True,timeout=120)
     assert child.returncode==0,child.stderr
     return json.loads(child.stdout)
 

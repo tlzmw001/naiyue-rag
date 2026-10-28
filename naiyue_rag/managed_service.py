@@ -1,6 +1,5 @@
 """Start on absence, verify readiness, and stop only the exact owned child."""
 import logging
-import os
 import subprocess
 import sys
 import tempfile
@@ -63,10 +62,6 @@ class ManagedConnection:
             failed=True;LOGGER.error('service_shutdown_failed code=service_shutdown_failed')
         finally:
             failed=not _close(self.client) or failed
-            if exc_type is not None and self._stderr is not None and os.environ.get('NYR_NATIVE_DIAGNOSTICS')=='1':
-                self._stderr.seek(0)
-                for line in self._stderr.read(10000).decode('utf-8',errors='replace').splitlines():
-                    if 'chroma_diagnostic' in line:print(line,file=sys.stderr)
             if self._stderr is not None:failed=not _close(self._stderr) or failed
         if failed and exc_type is None:raise LocalServiceError('service_shutdown_failed')
         return False
