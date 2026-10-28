@@ -34,7 +34,8 @@ def smoke(root,expected_version=None):
     assert platform.machine() in supported.get(sys.platform,set()), 'unsupported target architecture'
     # Imports verify full runtime dependencies, without fetching any model weights.
     import torch,sentence_transformers,transformers,chromadb,bm25s
-    root=root.resolve();environment={**os.environ,'HOME':str(root),'USERPROFILE':str(root),'PYTHONUTF8':'1','OMP_NUM_THREADS':'1'}
+    root=root.resolve();environment={**os.environ,'HOME':str(root),'USERPROFILE':str(root),'PYTHONUTF8':'1','OMP_NUM_THREADS':'1',
+        'NYR_NATIVE_DIAGNOSTICS':'1'}
     environment.pop('PYTHONPATH',None)
     environment.pop('OPENAI_LOG',None);environment.pop('OPENAI_CUSTOM_HEADERS',None)
     command=Path(sys.executable).parent/('nyr.exe' if os.name=='nt' else 'nyr')
