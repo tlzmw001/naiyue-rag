@@ -15,6 +15,7 @@ from .query.retrieval_pipeline import RetrievalPipeline
 from .reranking.core import CoreReranker
 from .reranking.llm import LLMReranker
 from .response.builder import ResponseBuilder
+from .storage.query_cache import QueryResourceCache
 
 LOGGER=logging.getLogger(__name__)
 
@@ -32,6 +33,8 @@ class ApplicationRuntime:
         self.manager=DocumentManager(cfg.storage,cfg.chroma,cfg.bm25,project_root=Path(cfg.config_path).parent)
         self._stack=ExitStack();self._lock=threading.Lock();self._closed=False
         self._provider=None;self._dense=None;self._sparse=None;self._pipeline=None
+        self._failed_closers=[]
+        self._resources=QueryResourceCache()
 
     @contextmanager
     def _operation(self):
@@ -47,15 +50,26 @@ class ApplicationRuntime:
             with ExitStack() as pending:
                 provider=pending.enter_context(OpenAICompatibleEmbedding(cfg,api_key=key))
                 dense=DenseEncoder(cfg,provider);sparse=SparseEncoder(cfg,self.settings.sparse)
-                self._stack.enter_context(pending.pop_all())
+                pending.pop_all();self._own(provider)
                 self._provider=provider;self._dense=dense;self._sparse=sparse
         return self._dense,self._sparse
+
+    def _close_owned(self,resource):
+        try:resource.close()
+        except Exception:
+            if resource not in self._failed_closers:self._failed_closers.append(resource)
+            LOGGER.error('application_resource_close_failed code=application_close_failed')
+            raise
+
+    def _own(self,resource):
+        self._stack.callback(self._close_owned,resource)
+        return resource
 
     def _query_pipeline(self):
         if self._pipeline is None:
             cfg=self.settings;dense,sparse=self._encoding();backend=None
             if cfg.rerank.backend=='llm':
-                backend=self._stack.enter_context(LLMReranker(self.registry.llm_settings(cfg.rerank.model),
+                backend=self._own(LLMReranker(self.registry.llm_settings(cfg.rerank.model),
                     api_key=self.registry.resolve_key(cfg.rerank.model)))
             elif cfg.rerank.backend=='cross_encoder':
                 from .reranking.cross_encoder import CrossEncoderReranker
@@ -70,25 +84,50 @@ class ApplicationRuntime:
 
     def ingest(self,*,expected_revision,force=False):
         with self._operation():
+            self._resources.clear()
             cfg=self.settings;dense,sparse=self._encoding()
             pipeline=IngestionPipeline(cfg.storage,cfg.ingestion,BatchProcessor(dense.settings,dense,sparse),
                 cfg.chroma,cfg.bm25,knowledge_base_root=cfg.knowledge_base_root,project_root=Path(cfg.config_path).parent)
             return pipeline.run(expected_revision=expected_revision,force=force).to_dict()
 
     def query(self,query,*,scope_document_ids=None,exclude_document_ids=None,expected_revision=None):
-        with self._operation():
+        with self._operation(),self._resources.use(self.manager):
             return self._query_pipeline().query(query,scope_document_ids=scope_document_ids,
                 exclude_document_ids=exclude_document_ids,expected_revision=expected_revision)
+
+    def remove(self,document_id,*,expected_revision):
+        with self._operation():
+            self._resources.clear()
+            cfg=self.settings;dense,sparse=self._encoding()
+            pipeline=IngestionPipeline(cfg.storage,cfg.ingestion,BatchProcessor(dense.settings,dense,sparse),
+                cfg.chroma,cfg.bm25,knowledge_base_root=cfg.knowledge_base_root,project_root=Path(cfg.config_path).parent)
+            return pipeline.remove_document(document_id,expected_revision=expected_revision).to_dict()
 
     def close(self):
         if not self._lock.acquire(blocking=False):raise SettingsError('application_busy')
         try:
             if self._closed:return
             self._closed=True
-            try:self._stack.close()
+            try:
+                try:self._resources.clear()
+                finally:self._stack.close()
             except Exception:
                 LOGGER.error('application_close_failed code=application_close_failed')
                 raise SettingsError('application_close_failed') from None
+        finally:self._lock.release()
+
+    def _retry_close(self):
+        if not self._lock.acquire(blocking=False):raise SettingsError('application_busy')
+        try:
+            retry,self._failed_closers=self._failed_closers,[]
+            failed=False
+            for resource in retry:
+                try:self._close_owned(resource)
+                except Exception:failed=True
+            try:self._resources.clear()
+            except Exception:
+                LOGGER.error('application_resource_close_failed code=application_close_failed');failed=True
+            if failed:raise SettingsError('application_close_failed')
         finally:self._lock.release()
 
     def __enter__(self):return self

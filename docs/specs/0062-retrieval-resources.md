@@ -1,0 +1,35 @@
+# Spec0062：并发查询资源与版本持有
+
+接口：RetrievalService(settings)拥有Scheduler与RetrievalEngine；submit/query/ingest/documents/close/status，
+query为submit(...).result()便捷入口；保持原query参数和返回证据，不改变ApplicationRuntime公开签名。
+Service通过naiyue_rag.serving导出，核心不依赖HTTP。新入口不经过旧Runtime.query总锁。
+
+Engine启动时为每执行槽位独立创建ApplicationRuntime并核对模型表身份相同；模型客户端仍惰性装配。
+这样一个服务不会因models.json被编辑而让晚启动的槽位选择另一套模型；不共享Provider可变请求状态。
+共享VersionResources注册表按完整ActiveVersion持有一份缓存；并发首次初始化串行，查询本体不持注册表锁。
+每请求lease固定活动版本；DocumentManager读取通过ContextVar选择已固定版本，而非第二次读取latest。
+复用现有query_cache装饰机制；传入两路工作线程的ContextVar保持独立请求控制和同版本资源。
+版本发生变化保留旧entry直到其引用为0；同请求超时但未退出仍持有lease。
+校验失败不得发布缓存；文件变化且entry在用时拒绝新lease，不能清掉在途请求客户端。
+业务文件基线在初始化前后/使用结束检查，Chroma原生维护文件单独处理；不把业务文件变化当冷启动维护。
+修复QueryResourceCache.clear失败客户端丢引用；失败关闭保留所有权并可再次清理。
+
+控制Context在查询流水线各阶段、资料文件读取以及Provider网络边界检查；网络超时取剩余期限和原期限较小值。
+取消可能被原核心包装为QueryJobError，但调度器对外终态仍取已固定timeout/cancelled，不回传晚到成功。
+控制异常不包含原始查询/Key。每槽位退出只关闭自己Provider，共享客户端由版本注册表最后释放。
+
+影响serving/service.py、engine.py、resources.py、storage/query_cache.py、document_manager.py、
+query/retrieval_pipeline.py、hybrid_search.py、encoding/openai_embedding.py、bounded_transport.py、reranking/llm.py及测试。
+正常结果与旧链一致；并发两模型请求实际重叠、trace/范围不串线；原生双索引；热查询不重解析；
+缓存关闭失败可重试、冷加载业务文件变化明确失败。回退保留存储格式和旧入口。
+
+## 实施与验证
+
+serving.Service/Engine/VersionResources已接线；按槽位独立Provider、ContextVar固定ActiveVersion、lease引用计数、
+模型调用剩余期限和阶段取消检查均由真实查询链消费。缓存失败关闭保留引用；槽位退出失败由后续close重试，
+Runtime通过内部_retry_close处理失败closer，原公开close幂等语义保持。
+源码专项含Provider底层SDK关闭首次失败/恢复重试，不只替换Provider.close门面。
+冷加载业务文件变化被拒绝；热查询若外部改变目录，已有请求可用已校验内存快照完成，阻止新lease并在refs=0清理。
+Windows路径回归先失败，再使用Path.is_relative_to修复Chroma维护目录识别；本机路径分支不能替代Windows原生CI。
+最终全量2424 passed in490.51s；原生Chroma/BM25新服务十条返回、两请求重叠、热查询零全库重放均通过。
+独立架构/安全只读复核未发现新的高置信阻塞项。真实Linux/Ollama吞吐仍待用户机器实测。

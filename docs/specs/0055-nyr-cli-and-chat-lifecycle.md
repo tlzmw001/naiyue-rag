@@ -1,5 +1,7 @@
 # Spec0055：首版第4片／nyr入口与一个终端的chat
 
+2026-10-28后续适配见[Spec0065](0065-nyr-shared-service-adapter.md)：nyr已启动共享检索服务，并补齐status/document/remove及query范围参数；本页保留首版生命周期合同与历史验收。
+
 日期2026-10-26，依赖0054。产品范围已确认，本片不发布安装包。
 
 ## 命令与数据流

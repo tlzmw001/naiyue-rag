@@ -4,6 +4,7 @@ from importlib import metadata
 import logging
 from threading import Lock
 from ..core.errors import StorageError
+from .query_cache import current_query_cache
 
 SDK_VERSION='1.5.9'
 _CLIENT_LOCK=Lock()
@@ -34,7 +35,9 @@ def call(method,*,code='chroma_read_failed',**kwargs):
 def open_collection(path,project_root,name,identity,batch_size,*,create=False):
     # Chroma 1.5.9 shares an unsynchronized per-path System cache between threads.
     with _CLIENT_LOCK:
-        client=new_client(path,project_root);failed=False
+        cache=current_query_cache() if not create else None
+        client=new_client(path,project_root) if cache is None else cache.native_client(path,project_root,new_client)
+        failed=False
         try:
             if create:
                 maximum=call(client.get_max_batch_size)
@@ -55,7 +58,8 @@ def open_collection(path,project_root,name,identity,batch_size,*,create=False):
             failed=True
             raise
         finally:
-            try:client.close()
+            try:
+                if cache is None:client.close()
             except Exception:
                 if failed:logging.getLogger(__name__).error('chroma_close_failed code=chroma_close_failed')
                 else:raise StorageError('chroma_close_failed') from None

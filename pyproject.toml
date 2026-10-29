@@ -35,7 +35,7 @@ version = {attr = "naiyue_rag._version.__version__"}
 [tool.setuptools.packages.find]
 include = ["naiyue_rag", "naiyue_rag.core", "naiyue_rag.encoding", "naiyue_rag.ingestion",
  "naiyue_rag.query", "naiyue_rag.reranking", "naiyue_rag.response", "naiyue_rag.storage",
- "naiyue_rag.validation", "naiyue_rag.resources"]
+ "naiyue_rag.validation", "naiyue_rag.resources", "naiyue_rag.serving"]
 
 [tool.setuptools]
 include-package-data = false

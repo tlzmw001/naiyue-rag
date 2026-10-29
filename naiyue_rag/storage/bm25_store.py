@@ -8,6 +8,7 @@ from ..core.storage_settings import validate_storage_settings
 from ..core.errors import StorageError
 from .bundle_store import BundleStore,_digest,_hash,_json_bytes,_parse
 from . import bm25_backend as backend
+from .query_cache import cached_query_resource
 
 
 @dataclass(frozen=True)
@@ -43,6 +44,7 @@ class BM25Store:
     def _path(self,index_id):
         return self.bundles._path(index_id,namespace='bm25',error_code='bm25_path_invalid')
 
+    @cached_query_resource
     def _prepare(self,bundle_id):
         bundle=self.bundles.load(bundle_id);result=bundle_encoding(bundle);records=[r.sparse for r in result.records]
         postings,avgdl,nnz=backend.statistics(records)
@@ -81,6 +83,7 @@ class BM25Store:
         if sum(map(len,payloads.values()))>self.settings.max_bundle_bytes:raise StorageError('bm25_limit_exceeded')
         return payloads
 
+    @cached_query_resource
     def _load_index(self,path,expected,rows,records):
         if not path.exists():raise StorageError('bm25_index_not_found')
         try:

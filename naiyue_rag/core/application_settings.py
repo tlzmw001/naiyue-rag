@@ -1,5 +1,5 @@
 """One application file, with typed module settings and explicit path ownership."""
-from dataclasses import dataclass,asdict
+from dataclasses import dataclass,asdict,field
 import logging
 import math
 from pathlib import Path
@@ -17,6 +17,7 @@ from .bm25_settings import BM25Settings
 from .hybrid_settings import HybridSettings
 from .rerank_settings import RerankSettings
 from .evidence_settings import EvidenceSettings
+from .retrieval_settings import RetrievalSettings
 
 LOGGER=logging.getLogger(__name__)
 
@@ -111,14 +112,18 @@ class ApplicationSettings:
     hybrid:HybridSettings
     rerank:RerankSelection
     evidence:EvidenceSettings
+    retrieval:RetrievalSettings=field(default_factory=RetrievalSettings)
 
     def to_dict(self):
         return dict(config_version=1,paths=dict(data_root=self.data_root,knowledge_base_root=self.knowledge_base_root),
             models_file=self.models_file,**{name:getattr(self,name).to_dict() for name in
-            ('service','ingestion','encoding','sparse','storage','chroma','bm25','hybrid','rerank','evidence')})
+            ('service','ingestion','encoding','sparse','storage','chroma','bm25','hybrid','rerank','evidence','retrieval')})
 
 
 def _assemble(source,raw):
+    if type(raw) is not dict:raise ValueError()
+    raw=dict(raw)
+    retrieval=RetrievalSettings.from_dict(raw.pop('retrieval',RetrievalSettings().to_dict()))
     fields={'config_version','paths','models_file','service','ingestion','encoding','sparse','storage','chroma','bm25','hybrid','rerank','evidence'}
     raw=_exact(raw,fields)
     if type(raw['config_version']) is not int or raw['config_version']!=1:raise ValueError()
@@ -142,7 +147,7 @@ def _assemble(source,raw):
         SparseEncodingSettings.from_dict(sparse),StorageSettings.from_dict(storage),
         ChromaSettings.from_dict(raw['chroma']),BM25Settings.from_dict(raw['bm25']),
         HybridSettings.from_dict(raw['hybrid']),RerankSelection(backend,model,RerankSettings(enabled=backend!='none',**rerank)),
-        EvidenceSettings.from_dict(raw['evidence']))
+        EvidenceSettings.from_dict(raw['evidence']),retrieval)
 
 
 def load_application_settings(config_path=None):

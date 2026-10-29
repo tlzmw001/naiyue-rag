@@ -14,6 +14,7 @@ Naiyue RAG 是一个本地运行的知识检索服务。导入文档后，可以
 - **增量更新**：复用未变化文档的编码，新增或变化的文档重新编码；模型、表示或切分策略改变时重新计算。
 - **追溯证据**：检索结果绑定同一活动版本，保留来源指纹、实际位置和本次调用用量；已入库内容可在原始目录离线后继续查询。
 - **独立使用**：提供 Python 核心库、本机 HTTP 服务和 `nyr` 命令，核心检索链路独立于 Agent 和界面。
+- **共享检索模块**：提供独立 Python 服务对象，支持有界并发、排队、可配置期限和协作取消，供后续 Agent/MCP 接入。用法见[共享检索说明](https://github.com/tlzmw001/naiyue-rag/blob/main/docs/shared-retrieval.md)。
 
 ## 安装
 
@@ -26,10 +27,10 @@ python -m pip install .
 nyr --help
 ```
 
-0.1.0 发布到 PyPI 后，安装方式为：
+从 PyPI 安装当前版本：
 
 ```sh
-pip install naiyue-rag
+pip install --upgrade naiyue-rag==0.2.0
 ```
 
 一次安装会装齐全部正式功能的运行依赖，包括 PyTorch、Transformers 和 Sentence Transformers。依赖包允许联网下载，模型权重需要另行显式准备。
@@ -81,18 +82,29 @@ nyr chat
 
 **只用 `nyr chat` 就能在一个终端中使用。** 没有服务时自动启动，有匹配的服务时直接连接；输入 `/exit`、EOF 或按 Ctrl+C 退出，只会关闭它本次启动的服务。
 
+共享使用时，先在一个终端运行 `nyr` 保持服务常驻，其他终端用 `nyr chat` 或 `nyr query` 连接。
+`nyr` 使用共享检索模块，默认两条查询执行、二十条等待，参数在 `retrieval` 配置节中调整。
+用 `nyr status` 查看执行、等待和取消后仍在收尾的数量。连接已有常驻服务的客户端退出不会停止它。
+
 之后更新文档时，先运行 `nyr documents` 查看 `active.revision`，再将该值传给 `ingest --expected-revision`。版本冲突或结果不确定时，先核对状态再操作。
 
 ## 常用命令
 
 | 命令 | 作用 |
 |---|---|
-| `nyr` | 在前台启动本机服务 |
+| `nyr` | 在前台启动共享在线检索服务，使用本机认证入口 |
 | `nyr chat` | 自动启动或连接服务，连续检索证据 |
 | `nyr documents` | 查看文档和当前活动版本 |
+| `nyr document ID` | 查看指定文档元数据详情，可加 `--expected-revision N` |
+| `nyr remove ID --expected-revision N` | 从活动版本移除文档；保留原文件和历史版本 |
 | `nyr ingest --expected-revision N` | 按指定版本摄取新增或变化的材料 |
 | `nyr query '问题内容'` | 一次查询，输出结构化 JSON 证据 |
+| `nyr query '问题内容' --scope-document-id ID` | 限定文档范围；参数可重复，也可用 `--exclude-document-id ID` 排除 |
+| `nyr status` | 查看当前服务的执行、等待和后台收尾状态 |
+| `nyr eval run --questions questions.jsonl --output runs/model-a` | 顺序批量跑题，导出原始结果、人工报告和空白评审表 |
 | `nyr models prepare local-reranker` | 显式下载并审计配置中的本地重排模型 |
+
+题集格式、模型对照及人工评审步骤见[批量评测说明](https://github.com/tlzmw001/naiyue-rag/blob/main/docs/evaluation.md)。
 
 所有实际运行命令均可用 `--config` 指定统一配置，比如：
 

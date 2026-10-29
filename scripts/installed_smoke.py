@@ -13,7 +13,8 @@ import socket
 import subprocess
 import sys
 import tempfile
-from threading import Thread
+from threading import Thread,Condition,Event
+from concurrent.futures import ThreadPoolExecutor
 import time
 
 
@@ -56,12 +57,21 @@ def smoke(root,expected_version=None):
     assert json.loads(run('documents'))['documents']==[]
     assert '终端检索' in run('chat',input='')
     calls=[]
+    blocked_http=0;http_entered=Condition();http_release=Event()
+    disconnect_entered=Event();disconnect_release=Event()
     class ModelHandler(BaseHTTPRequestHandler):
         def do_POST(self):
+            nonlocal blocked_http
             assert self.headers.get('Authorization')=='Bearer SYNTHETIC_MODEL_KEY'
             wire=json.loads(self.rfile.read(int(self.headers['Content-Length'])))
             calls.append(self.path)
             if self.path.endswith('/embeddings'):
+                if any('hold_http_query' in text for text in wire['input']):
+                    with http_entered:
+                        blocked_http+=1;http_entered.notify_all()
+                    assert http_release.wait(30)
+                if any('disconnect_probe' in text for text in wire['input']):
+                    disconnect_entered.set();assert disconnect_release.wait(30)
                 result={'model':'synthetic-model','data':[{'index':i,'embedding':[1.,2.,3.]} for i in reversed(range(len(wire['input'])))],
                     'usage':{'prompt_tokens':7*len(wire['input']),'total_tokens':7*len(wire['input'])}}
             else:
@@ -111,6 +121,34 @@ def smoke(root,expected_version=None):
                     except LocalServiceError:
                         assert service.poll() is None and time.monotonic()<deadline
                         time.sleep(.05)
+                def wait_status(predicate):
+                    deadline=time.monotonic()+15
+                    while True:
+                        status=client.status()
+                        if predicate(status):return status
+                        assert time.monotonic()<deadline,status
+                        time.sleep(.01)
+                with ThreadPoolExecutor(max_workers=10) as queries:
+                    jobs=[queries.submit(client.request,'query',{'query':'hold_http_query feature_x'}) for _ in range(10)]
+                    try:
+                        with http_entered:assert http_entered.wait_for(lambda:blocked_http>=2,15)
+                        status=wait_status(lambda s:s['executing']==2 and s['queued']==8)
+                        assert status['draining']==0
+                    finally:http_release.set()
+                    assert all(job.result(30)['status']=='retrieved' for job in jobs)
+                # Closing a real TCP connection must cancel only its own retrieval handle.
+                with socket.create_connection((settings.service.host,settings.service.port),timeout=5) as connection:
+                    body=json.dumps({'query':'disconnect_probe feature_x'}).encode()
+                    headers=(f'POST /v1/query HTTP/1.1\r\nHost: {settings.service.host}:{settings.service.port}\r\n'
+                        f'Authorization: Bearer {settings.service.access_token}\r\nContent-Type: application/json\r\n'
+                        f'Content-Length: {len(body)}\r\n\r\n').encode()
+                    connection.sendall(headers+body);assert disconnect_entered.wait(15)
+                try:
+                    wait_status(lambda s:s['draining']==1)
+                    assert client.request('query',{'query':'feature_x'})['status']=='retrieved'
+                finally:disconnect_release.set()
+                wait_status(lambda s:s['executing']==0 and s['queued']==0)
+                assert json.loads(run('status'))['executing']==0
                 rendered=run('chat',input='feature_x threshold\n/exit\n')
                 if '终端检索' not in rendered or 'feature_x' not in rendered:
                     print(f'chat_smoke_diagnostic rendered={rendered[:1000]!r}',file=sys.stderr)
@@ -140,11 +178,44 @@ def smoke(root,expected_version=None):
             crashed.stdin.close()
         recovered=json.loads(run('query','feature_x threshold','--expected-revision','1'))
         assert recovered['status']=='retrieved' and recovered['active']==result['active']
+        questions=root/'questions.jsonl'
+        questions.write_text('\n'.join(json.dumps({'id':f'Q{i}','query':text,'reference_notes':'human-only-hint'})
+            for i,text in enumerate(['feature_x','threshold'],1)),encoding='utf-8')
+        evaluation=root/'evaluation-run'
+        assert json.loads(run('eval','run','--questions',str(questions),'--output',str(evaluation)))['status']=='completed'
+        evaluation_meta=json.loads((evaluation/'run.json').read_text(encoding='utf-8'))
+        evaluation_rows=[json.loads(line) for line in (evaluation/'results.jsonl').read_text(encoding='utf-8').splitlines()]
+        assert evaluation_meta['completed']==2 and evaluation_meta['active']['revision']==1
+        assert all(row['status']=='success' and row['result']['evidence'] for row in evaluation_rows)
+        assert (evaluation/'report.md').is_file() and (evaluation/'review.csv').is_file()
+        assert all('SYNTHETIC_MODEL_KEY' not in file.read_text(encoding='utf-8-sig') for file in evaluation.iterdir())
+        from naiyue_rag.serving import RetrievalService
+        with RetrievalService(settings) as shared:
+            handles=[shared.submit('feature_x threshold',expected_revision=1) for _ in range(10)]
+            shared_results=[handle.result(90) for handle in handles]
+            assert all(handle.wait_backend(15) for handle in handles)
+            assert all(item['status']=='retrieved' and item['active']==result['active'] for item in shared_results)
+        document_id=listed['documents'][0]['document_id']
+        assert json.loads(run('document',document_id,'--expected-revision','1'))['document']['document_id']==document_id
+        scoped=json.loads(run('query','feature_x','--scope-document-id',document_id,'--expected-revision','1'))
+        assert scoped['evidence'] and all(e['document_id']==document_id for e in scoped['evidence'])
+        assert json.loads(run('query','feature_x','--exclude-document-id',document_id))['status']=='retrieved'
+        removed=json.loads(run('remove',document_id,'--expected-revision','1'))
+        assert removed['status']=='removed' and removed['active']['revision']==2
+        assert json.loads(run('document',document_id,'--expected-revision','2'))['document'] is None
+        source.with_name('source-offline').rename(source)
+        restored=json.loads(run('ingest','--expected-revision','2'))
+        assert restored['active']['revision']==3
+        assert len(json.loads(run('documents'))['documents'])==2
         print(json.dumps({'status':'passed','platform':platform.platform(),'machine':platform.machine(),
             'python':platform.python_version(),'installed_version':metadata.version('naiyue-rag'),
-            'native_documents':2,'active_revision':1,'query_evidence':len(result['evidence']),
-            'model_requests':len(calls),'real_vendor_requests':0,'weights_downloaded':False,'reopened_after_process_crash':True}))
-    finally:model_server.shutdown();worker.join();model_server.server_close()
+            'native_documents':2,'active_revision':3,'query_evidence':len(result['evidence']),
+            'model_requests':len(calls),'real_vendor_requests':0,'weights_downloaded':False,
+            'reopened_after_process_crash':True,'shared_retrieval_queries':10,'http_concurrent_queries':10,
+            'tcp_disconnect_cancelled':True,'cli_management_roundtrip':True,'evaluation_questions':2}))
+    finally:
+        http_release.set();disconnect_release.set()
+        model_server.shutdown();worker.join();model_server.server_close()
 
 
 if __name__=='__main__':

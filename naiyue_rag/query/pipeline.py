@@ -13,6 +13,7 @@ from ..encoding.query_encoder import QueryEncoder
 from ..storage import DocumentManager,ActiveVersion,ChromaSettings,BM25Settings
 from ..storage.bundle_store import _json_bytes
 from .query_processor import QueryProcessor
+from ..serving.control import checkpoint
 
 LOGGER=logging.getLogger(__name__)
 
@@ -104,6 +105,7 @@ class QueryPipeline:
     def prepare(self,query,*,scope_document_ids=None,exclude_document_ids=None,expected_revision=None):
         stage='request';context=None;active=None;report=None;trace=None
         try:
+            checkpoint()
             try:context=TraceContext()
             except Exception:raise TraceError('query_trace_failed') from None
             self._validate()
@@ -116,6 +118,7 @@ class QueryPipeline:
                 active=ActiveVersion.from_dict(selected.to_dict())
             elif base is not None:raise StorageError('catalog_identity_mismatch')
             docs,chunks=self._scope(processed,base)
+            checkpoint()
             encoding=None
             if active is None:status='unactivated'
             else:
@@ -125,6 +128,7 @@ class QueryPipeline:
                 status='empty_index' if active.version.document_count==0 or docs and not chunks else \
                     'empty_scope' if not docs else 'ready'
             if status=='ready':
+                checkpoint()
                 stage='embedding';value=self.query_encoder.encode(processed.raw_query)
                 if type(value) is not QueryEncodingResult:raise ValueError()
                 report=EncodingReport.from_dict(value.report.to_dict())

@@ -38,12 +38,23 @@ class IngestionPipeline:
             if type(chroma_settings) is not ChromaSettings or type(bm25_settings) is not BM25Settings:raise ValueError()
             self.chroma_settings=ChromaSettings.from_dict(chroma_settings.to_dict())
             self.bm25_settings=BM25Settings.from_dict(bm25_settings.to_dict());self._validate()
-            self.loader=MarkdownLoader(knowledge_base_root,self.settings.knowledge_base_id,self.settings.max_file_bytes)
+            self._knowledge_base_root=knowledge_base_root;self._loader=None
             self.manager=DocumentManager(self.settings,self.chroma_settings,self.bm25_settings,project_root=project_root)
             self.chunker=DocumentChunker(self.ingestion_settings)
         except Exception:
             LOGGER.error('ingestion_failed stage=validate code=ingestion_invalid_request activation_status=not_attempted')
             raise IngestionJobError('validate','ingestion_invalid_request') from None
+
+    @property
+    def loader(self):
+        # Removal consumes the saved bundle and must work while original sources are offline.
+        if self._loader is None:
+            self._loader=MarkdownLoader(self._knowledge_base_root,self.settings.knowledge_base_id,self.settings.max_file_bytes)
+        return self._loader
+
+    @loader.setter
+    def loader(self,value):
+        self._loader=value
 
     def _validate(self):
         validate_storage_settings(self.settings);validate_ingestion_settings(self.ingestion_settings)

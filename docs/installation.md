@@ -1,6 +1,6 @@
-# 本机安装与使用（首版候选）
+# 本机安装与使用
 
-本页对应0.1.0正式发行源码。PyPI上传完成并通过公开安装验证后，使用`pip install naiyue-rag==0.1.0`；上传前可从源码或同版本本地wheel安装。
+本页对应0.2.0发行源码；发布验证通过后使用`pip install --upgrade naiyue-rag==0.2.0`。版本发布状态见对应GitHub Release，源码安装及本地wheel安装同样可用。
 
 ## 安装
 
@@ -12,7 +12,7 @@ python3.12 -m venv .venv
 # Windows PowerShell：.venv\Scripts\Activate.ps1
 python -m pip install .
 # 或使用已经构建的本地候选wheel：
-# python -m pip install /绝对路径/naiyue_rag-0.1.0-py3-none-any.whl
+# python -m pip install /绝对路径/naiyue_rag-0.2.0-py3-none-any.whl
 nyr --help
 ```
 
@@ -72,14 +72,20 @@ nyr models prepare local-reranker
 
 ## 验证与边界
 
+`nyr`现在常驻运行共享检索模块，默认2条执行、20条等待。`nyr status`查看队列/后台收尾；
+`document ID`、`remove ID --expected-revision N`以及query的`--scope-document-id`/`--exclude-document-id`
+补齐既有核心能力的CLI接线。源目录离线可移除已保存文档，原文件不被删除。
+完整命令覆盖、期限与网络宽限、取消及升级重启说明见[共享检索说明](shared-retrieval.md)。
+批量运行自己的题集用`nyr eval run --questions questions.jsonl --output runs/model-a`，题集/人工报告格式见[评审说明](evaluation.md)。
+
 服务Token与模型Key分离，chat自动使用所选配置的服务Token。首版接口只供本机调用；无跨域、局域网/公网、多用户权限、上传、前端或Agent。HTTP接口见Spec0054。Windows保留文件同步/SQLite事务/完整性审计，但目录元数据不保证与POSIX相同的突然断电持久性；不可把正常恢复测试当断电测试。
 
 ```sh
 python -m pip install -r requirements-dev.txt
 python scripts/run_formal_tests.py
 python -m build
-python scripts/inspect_distribution.py dist/naiyue_rag-0.1.0-py3-none-any.whl dist/naiyue_rag-0.1.0.tar.gz
-python scripts/validate_candidate.py --wheel dist/naiyue_rag-0.1.0-py3-none-any.whl --venv /新的临时目录/venv
+python scripts/inspect_distribution.py dist/naiyue_rag-0.2.0-py3-none-any.whl dist/naiyue_rag-0.2.0.tar.gz
+python scripts/validate_candidate.py --wheel dist/naiyue_rag-0.2.0-py3-none-any.whl --venv /新的临时目录/venv
 ```
 
 干净安装smoke使用合成本机模型HTTP服务与原生Chroma/BM25/SQLite，离开源码目录执行真实入口，验证重复摄取、源目录离线后查询、服务复用和退出；不调用真实厂商或下载权重。历史实验测试继续保留，其私有旧快照/环境不能作为新克隆的隐式依赖；本机全量与正式独立套件分别记录。

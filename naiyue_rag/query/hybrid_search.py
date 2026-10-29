@@ -1,5 +1,6 @@
 """One preparation, explicitly configured branches and a strict no-degradation join."""
 from concurrent.futures import ThreadPoolExecutor
+from contextvars import copy_context
 import logging
 import time
 from ..core.hybrid_settings import HybridSettings
@@ -13,6 +14,7 @@ from .pipeline import QueryPipeline
 from .dense_retriever import DenseRetriever
 from .sparse_retriever import SparseRetriever
 from .fusion import RRFFusion
+from ..serving.control import checkpoint
 
 LOGGER=logging.getLogger(__name__)
 
@@ -28,6 +30,7 @@ class HybridSearch:
     def _dense(self,prepared,cfg):
         start=time.monotonic()
         try:
+            checkpoint()
             result=DenseRetriever(self.pipeline.manager).retrieve(prepared,top_k=cfg.dense_top_k)
             return result,(time.monotonic()-start)*1000,None
         except Exception as error:return None,(time.monotonic()-start)*1000,error
@@ -35,6 +38,7 @@ class HybridSearch:
     def _sparse(self,prepared,cfg):
         start=time.monotonic()
         try:
+            checkpoint()
             result=SparseRetriever(self.pipeline.manager,SparseQuerySettings(cfg.sparse_top_k,cfg.bm25_statistics_scope)).retrieve(prepared)
             return result,(time.monotonic()-start)*1000,None
         except Exception as error:return None,(time.monotonic()-start)*1000,error
@@ -62,7 +66,8 @@ class HybridSearch:
             stage='dense'
             if cfg.parallel_retrieval:
                 with ThreadPoolExecutor(max_workers=2) as executor:
-                    d=executor.submit(self._dense,dense_input,cfg);s=executor.submit(self._sparse,sparse_input,cfg)
+                    d=executor.submit(copy_context().run,self._dense,dense_input,cfg)
+                    s=executor.submit(copy_context().run,self._sparse,sparse_input,cfg)
                     outcomes=[d.result(),s.result()]
             else:outcomes=[self._dense(dense_input,cfg),self._sparse(sparse_input,cfg)]
             errors=[]

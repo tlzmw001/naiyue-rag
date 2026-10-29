@@ -59,6 +59,8 @@ class CrossEncoderReranker:
         except Exception:raise RerankError('rerank_model_unavailable') from None
 
     def score(self,query,candidates):
+        from ..serving.control import checkpoint
+        checkpoint()
         started=time.monotonic();report=new_report()
         if not self._lock.acquire(blocking=False):raise RerankError('rerank_provider_busy')
         try:
@@ -66,6 +68,7 @@ class CrossEncoderReranker:
             if type(query) is not str or not query.strip() or type(candidates) is not list or not candidates:raise ValueError()
             pairs=[];ids=[]
             for candidate in candidates:
+                checkpoint()
                 if type(candidate) is not dict or set(candidate)!={'passage_id','text'} or \
                         any(type(v) is not str or not v.strip() for v in candidate.values()):raise ValueError()
                 uid=candidate['passage_id'];text=candidate['text']
@@ -75,6 +78,7 @@ class CrossEncoderReranker:
                     return_attention_mask=False,return_token_type_ids=False)['input_ids']
                 if len(tokens)>cfg.max_pair_tokens:raise RerankError('rerank_input_limit',report)
             raw=self._model.predict(pairs,batch_size=cfg.batch_size,show_progress_bar=False,convert_to_numpy=True)
+            checkpoint()
             # Native ndarray converts scalars; nested/multi-class output stays nested and is rejected.
             values=raw.tolist() if hasattr(raw,'tolist') else raw
             if type(values) is not list or len(values)!=len(ids):raise ValueError()

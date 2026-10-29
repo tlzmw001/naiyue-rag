@@ -1,5 +1,6 @@
 """Authenticated loopback HTTP adapter; RAG work stays in the existing runtime."""
 from contextlib import asynccontextmanager
+import asyncio
 import hmac
 import logging
 from urllib.parse import urlsplit
@@ -7,7 +8,7 @@ import uuid
 from fastapi import FastAPI,Request
 from starlette.concurrency import run_in_threadpool
 from starlette.responses import JSONResponse
-from .runtime import ApplicationRuntime
+from .serving import RetrievalService
 from .service_protocol import PROTOCOL_VERSION,configuration_identity,parse_request,error_response
 
 LOGGER=logging.getLogger(__name__)
@@ -34,13 +35,17 @@ class LocalBoundary:
         except Exception:local=False
         if not local or b'origin' in headers:return await reject(403,'service_local_access_required')
         parts=[];size=0
-        while True:
-            message=await receive()
-            if message['type']=='http.disconnect':return
-            chunk=message.get('body',b'');size+=len(chunk)
-            if size>self.settings.service.max_request_bytes:return await reject(413,'service_request_limit')
-            parts.append(chunk)
-            if not message.get('more_body',False):break
+        try:
+            async with asyncio.timeout(self.settings.service.request_timeout_seconds):
+                while True:
+                    message=await receive()
+                    if message['type']=='http.disconnect':return
+                    chunk=message.get('body',b'');size+=len(chunk)
+                    if size>self.settings.service.max_request_bytes:return await reject(413,'service_request_limit')
+                    parts.append(chunk)
+                    if not message.get('more_body',False):break
+        except TimeoutError:
+            return await reject(408,'service_request_timeout')
         delivered=False
         async def buffered():
             nonlocal delivered
@@ -59,7 +64,7 @@ class LocalBoundary:
             if not started:await JSONResponse(result,status_code=status)(scope,buffered,send)
 
 
-def create_service(settings,*,runtime_factory=ApplicationRuntime,instance_id=None):
+def create_service(settings,*,runtime_factory=RetrievalService,instance_id=None):
     instance_id=instance_id or uuid.uuid4().hex
     @asynccontextmanager
     async def lifespan(app):
@@ -74,10 +79,38 @@ def create_service(settings,*,runtime_factory=ApplicationRuntime,instance_id=Non
     async def health():
         return dict(protocol=PROTOCOL_VERSION,instance_id=instance_id,config_identity=app.state.identity)
 
+    @app.get('/v1/status')
+    async def status():
+        return app.state.runtime.status()
+
+    async def wait_query(request,handle):
+        async def disconnected():
+            while True:
+                message=await request.receive()
+                if message['type']=='http.disconnect':return
+        result=asyncio.create_task(handle.async_result())
+        watcher=asyncio.create_task(disconnected())
+        try:
+            done,_=await asyncio.wait((result,watcher),return_when=asyncio.FIRST_COMPLETED)
+            if watcher in done:
+                watcher.result();handle.cancel()
+                LOGGER.info('service_query_disconnected request_id=%s',handle.request_id)
+                return JSONResponse({'error':{'code':'retrieval_cancelled'}},status_code=409)
+            return result.result()
+        except BaseException:
+            handle.cancel()
+            raise
+        finally:
+            for task in (result,watcher):
+                if not task.done():task.cancel()
+            await asyncio.gather(result,watcher,return_exceptions=True)
+
     async def execute(request,operation):
         if request.headers.get('content-type','').split(';')[0].strip().lower()!='application/json':
             return JSONResponse({'error':{'code':'service_json_required'}},status_code=415)
         data=parse_request(await request.body(),operation)
+        if operation=='query' and hasattr(request.app.state.runtime,'submit'):
+            return await wait_query(request,request.app.state.runtime.submit(**data))
         return await run_in_threadpool(getattr(request.app.state.runtime,operation),**data)
 
     @app.post('/v1/documents')
@@ -88,6 +121,12 @@ def create_service(settings,*,runtime_factory=ApplicationRuntime,instance_id=Non
 
     @app.post('/v1/query')
     async def query(request:Request):return await execute(request,'query')
+
+    @app.post('/v1/document')
+    async def document(request:Request):return await execute(request,'document')
+
+    @app.post('/v1/remove')
+    async def remove(request:Request):return await execute(request,'remove')
     return app
 
 

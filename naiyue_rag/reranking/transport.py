@@ -3,6 +3,7 @@ import logging
 import sys
 import time
 import httpx
+from ..serving.control import checkpoint
 
 
 class BoundaryFailure(Exception):
@@ -30,6 +31,7 @@ class BoundedBody(httpx.SyncByteStream):
     def __iter__(self):
         try:
             for chunk in self.response.stream:
+                checkpoint()
                 self.report['response_bytes']+=len(chunk)
                 if time.monotonic()>=self.deadline:_fail('rerank_deadline_exceeded',self.report)
                 if self.report['response_bytes']>self.limit:_fail('rerank_response_too_large',self.report)

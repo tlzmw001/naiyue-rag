@@ -14,6 +14,7 @@ from ..core.storage_settings import validate_storage_settings
 from .artifact_bundle import IndexBundle
 from .artifact_bundle_v2 import IndexBundleV2
 from .bundle_encoding import bundle_encoding
+from .query_cache import cached_query_resource
 
 FILES=('documents.json','chunks.json','relations.json','encoding.json')
 MANIFEST_FIELDS={'schema_version','status','bundle_id','knowledge_base_id','document_count','chunk_count',
@@ -205,6 +206,7 @@ class BundleStore:
         except StorageError:raise
         except Exception:raise StorageError('bundle_integrity_failed') from None
 
+    @cached_query_resource
     def load(self,bundle_id):
         if not _hash(bundle_id):raise StorageError('invalid_bundle_id')
         try:
@@ -216,6 +218,8 @@ class BundleStore:
             header=self._manifest(self._read_file(root/'manifest.json',self.settings.max_manifest_bytes),bundle_id)
             data={}
             for name in FILES:
+                from ..serving.control import checkpoint
+                checkpoint()
                 raw=self._read_file(root/name,self.settings.max_file_bytes);descriptor=header['files'][name]
                 if len(raw)!=descriptor['bytes'] or _digest(raw)!=descriptor['sha256']:raise StorageError('bundle_integrity_failed')
                 data[name]=_parse(raw)

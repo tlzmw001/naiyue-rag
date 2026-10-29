@@ -5,7 +5,18 @@ import sys
 
 # Explicit formal consumer suite; historical snapshot/experiment suites remain local.
 FORMAL="""
+test_evaluation_inputs.py
+test_evaluation_run.py
+test_evaluation_cli.py
 test_application_runtime.py
+test_retrieval_scheduler.py
+test_retrieval_configuration.py
+test_shared_retrieval.py
+test_shared_retrieval_native.py
+test_version_resource_safety.py
+test_serving_control.py
+test_query_resource_reuse.py
+test_query_resource_cache_native.py
 test_application_settings.py
 test_batch_processor.py
 test_batch_wiring.py
@@ -63,6 +74,8 @@ test_knowledge_reader_wiring.py
 test_llm_reranker.py
 test_local_embedding_audit.py
 test_local_service.py
+test_shared_http_adapter.py
+test_cli_shared_routes.py
 test_markdown_loader.py
 test_markdown_loader_wiring.py
 test_markdown_structure.py

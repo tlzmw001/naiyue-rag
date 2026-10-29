@@ -3,6 +3,11 @@ paths:
   data_root: ./data
   knowledge_base_root: knowledge
 models_file: models.json
+retrieval:
+  max_concurrent_queries: 2
+  max_queued_queries: 20
+  request_timeout_seconds: 180
+  shutdown_timeout_seconds: 10
 service:
   host: 127.0.0.1
   port: 8000

@@ -3,6 +3,7 @@ import logging
 import sys
 import time
 import httpx
+from ..serving.control import checkpoint
 
 LOGGER=logging.getLogger(__name__)
 
@@ -35,6 +36,7 @@ class _BoundedBody(httpx.SyncByteStream):
     def __iter__(self):
         try:
             for chunk in self.response.stream:
+                checkpoint()
                 self.report['response_bytes']+=len(chunk)
                 if time.monotonic()>=self.deadline:_fail('embedding_deadline_exceeded',self.report)
                 if self.report['response_bytes']>self.limit:_fail('embedding_response_too_large',self.report)

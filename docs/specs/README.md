@@ -1,5 +1,21 @@
 # 阶段 Spec
 
+## 模型效果测试与证据积累（A本机验证，B/C设计）
+
+[Spec0066](0066-retrieval-evaluation-workflow.md)：用户授权A及0.2.0发布，nyr eval run已实现/接线/本机验证（2474全量、1803正式、最终wheel安装2题通过）。先批量跑用户题集、保存同版本结果并人工评审；B证据积累和C离线评分仍为设计。首轮只记录线上最终证据阶段，上游完整候选诊断另片。用法见[评审说明](../evaluation.md)，真实资料质量另验，公开交付状态以0.2.0 Release为准。
+
+## nyr共享检索服务（已实现/本机验证）
+
+[Spec0065](0065-nyr-shared-service-adapter.md)：nyr/本机认证HTTP已接入共享服务，补status/document/remove及query范围参数；请求断开取消、整体超时、非阻塞单writer准入及源目录离线移除均有回归。最终2437全量通过，最终wheel安装环境十条HTTP查询、真实TCP断开取消与CLI管理闭环通过；构建/分发检查通过。尚未提交或新发布，源码候选0.1.0不覆盖已发布版本。Git同步/MCP及Linux真实材料性能仍后续验收。
+
+## 团队共享检索模块（0060–0064历史交付）
+
+[Spec0060](0060-shared-retrieval-service-plan.md)：用户确认团队通过未来MCP共用Linux知识库、Git手动/定时同步；检索默认2执行/20等待，期限可配置、协作取消、调用方重试。分片[0061调度](0061-retrieval-scheduler.md)、[0062资源](0062-retrieval-resources.md)、[0063并发更新](0063-concurrent-ingestion.md)、[0064分发验收](0064-retrieval-acceptance.md)已本机实现/接线/验证：2424全量通过、原生并发与最终wheel干净安装smoke通过。使用入口为naiyue_rag.serving，旧本机HTTP尚未迁移；Git/MCP及Linux真实材料容量后续验收。
+
+## 服务查询版本缓存
+
+[Spec0059](0059-query-version-resource-cache.md)：用户确认按版本复用已校验资料与索引，并检查文件变化。已复现同一运行时第二次查询仍17次资料包加载/34次全库解析重放；缓存及原生双索引回归已接线，完整回归与构建验证结果见该Spec。本机证据不替代公司Linux真实资料耗时验收。
+
 ## 本地 Embedding（Mac 已验证，Linux 待验收）
 
 [Spec0058](0058-local-embedding-mac-linux-plan.md)：复用现有 OpenAI 兼容 Provider 接入 Ollama `qwen3-embedding:0.6b`；Mac 上真实模型与正式 `nyr` 合成闭环已通过，并实测兼容接口超窗会静默截断。Linux 无 GPU 开发机按[操作说明](../local-embedding.md)由用户执行输入审计、无截断探针与实际资料验收；不把 Mac 结果当 Linux 性能证明。

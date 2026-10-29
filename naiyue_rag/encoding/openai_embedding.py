@@ -9,6 +9,7 @@ from ..core.encoding_settings import validate_encoding_settings
 from ..core.errors import EmbeddingExecutionError
 from .bounded_transport import BoundedTransport,BoundaryFailure
 from .execution_report import new_report,raise_execution_error,valid_seconds
+from ..serving.control import remaining_timeout,RetrievalError
 
 LOGGER=logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ class OpenAICompatibleEmbedding:
         report=new_report();_check_environment(report)
         if type(api_key) is not str or not api_key.strip() or any(ord(c)<33 or ord(c)>126 for c in api_key):
             raise_execution_error('embedding_invalid_credential',report)
-        self.settings=settings;self._closed=False;self._lock=threading.Lock()
+        self.settings=settings;self._closed=False;self._close_failed=False;self._lock=threading.Lock()
         self._http=None;self._client=None;self._transport=None
         try:
             # Import after environment checks: SDK import may honor OPENAI_LOG.
@@ -74,6 +75,7 @@ class OpenAICompatibleEmbedding:
             if self.closed:raise_execution_error('embedding_provider_closed',report)
             _check_environment(report)
             if not valid_seconds(timeout_seconds):raise_execution_error('embedding_invalid_timeout',report)
+            timeout_seconds=remaining_timeout(timeout_seconds)
             if type(texts) is not list or not texts or len(texts)>min(self.settings.runtime.batch_size,self.settings.runtime.max_inputs):
                 raise_execution_error('embedding_invalid_batch',report)
             sizes=[]
@@ -103,6 +105,8 @@ class OpenAICompatibleEmbedding:
             if time.monotonic()>=deadline:raise_execution_error('embedding_deadline_exceeded',report)
             report['elapsed_seconds']=max(0.,time.monotonic()-start)
             return payload,report.copy()
+        except RetrievalError:
+            raise
         except EmbeddingExecutionError as error:
             error.report['elapsed_seconds']=max(0.,time.monotonic()-start)
             raise
@@ -122,12 +126,14 @@ class OpenAICompatibleEmbedding:
         report=new_report()
         if not self._lock.acquire(blocking=False):raise_execution_error('embedding_provider_busy',report)
         try:
-            if self.closed:return
+            if self.closed and not self._close_failed:return
             self._closed=True
             try:self._client.close()
             except Exception:
+                self._close_failed=True
                 report['client_close_error_code']='embedding_client_close_failed'
                 raise_execution_error('embedding_client_close_failed',report)
+            self._close_failed=False
         finally:self._lock.release()
 
     def __enter__(self):

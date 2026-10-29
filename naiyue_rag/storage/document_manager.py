@@ -11,6 +11,7 @@ from .bm25_store import BM25Store,BM25IndexReceipt
 from .version_types import IndexVersion,ActiveVersion,ActivationReceipt,MAX_REVISION
 from .index_catalog import IndexCatalog
 from .document_views import _valid_document_id,project_list,project_detail
+from .query_cache import cached_query_resource,read_query_active
 
 
 class DocumentManager:
@@ -27,6 +28,7 @@ class DocumentManager:
         except Exception:raise StorageError('catalog_path_invalid') from None
         self.bundles=BundleStore(storage_settings);self.catalog=IndexCatalog(storage_settings)
 
+    @cached_query_resource
     def _audit(self,bundle_id,chroma,bm25):
         bundle=self.bundles.load(bundle_id);result=bundle_encoding(bundle)
         vector=ChromaStore(self.settings,chroma,project_root=self.project_root).audit(bundle_id)
@@ -85,7 +87,7 @@ class DocumentManager:
     def _document_bundle(self,expected_revision):
         if expected_revision is not None and (type(expected_revision) is not int or not 0<=expected_revision<=MAX_REVISION):
             raise StorageError('document_invalid_request')
-        active=self.catalog.read()
+        active=read_query_active(self)
         revision=0 if active is None else active.revision
         if expected_revision is not None and expected_revision!=revision:raise StorageError('catalog_revision_conflict')
         if active is None:return None,None

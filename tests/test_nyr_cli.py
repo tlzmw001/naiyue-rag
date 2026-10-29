@@ -170,3 +170,35 @@ def test_client_cleanup_failure_is_safe_and_preserves_primary(tmp_path,caplog,pr
     else:
         with pytest.raises(LocalServiceError,match='service_shutdown_failed'):connection.__exit__(None,None,None)
     assert 'SYNTHETIC_PRIVATE_CLIENT_CLOSE' not in caplog.text
+
+
+def test_real_local_client_receives_retrieval_timeout_before_http_timeout(tmp_path,monkeypatch):
+    from dataclasses import replace
+    from threading import Thread,Event
+    import uvicorn
+    from naiyue_rag.serving.engine import RetrievalEngine
+    from naiyue_rag.service import create_service
+    from naiyue_rag.local_client import LocalClient,LocalServiceError
+    cfg=service_config(tmp_path)
+    cfg=replace(cfg,service=replace(cfg.service,request_timeout_seconds=.5),
+        retrieval=replace(cfg.retrieval,request_timeout_seconds=.5))
+    release=Event()
+    def blocked(*args,**kwargs):
+        assert release.wait(10)
+        return {'status':'synthetic'}
+    monkeypatch.setattr(RetrievalEngine,'execute',blocked)
+    server=uvicorn.Server(uvicorn.Config(create_service(cfg),host=cfg.service.host,port=cfg.service.port,
+        loop='asyncio',http='h11',log_level='critical',access_log=False))
+    thread=Thread(target=server.run,daemon=True);thread.start()
+    try:
+        deadline=time.monotonic()+10
+        while not server.started:
+            assert thread.is_alive() and time.monotonic()<deadline
+            time.sleep(.01)
+        with LocalClient(cfg) as client:
+            with pytest.raises(LocalServiceError,match='^retrieval_timeout$'):
+                client.request('query',{'query':'synthetic'})
+            assert client.status()['draining']==1
+    finally:
+        release.set();server.should_exit=True;thread.join(10)
+        assert not thread.is_alive()

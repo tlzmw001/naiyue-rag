@@ -12,6 +12,7 @@ from ..core.storage_settings import validate_storage_settings
 from ..core.errors import StorageError
 from .bundle_store import BundleStore,_digest,_json_bytes,_parse
 from .chroma_backend import SDK_VERSION,call,open_collection
+from .query_cache import cached_query_resource
 
 
 @dataclass(frozen=True)
@@ -48,6 +49,7 @@ class ChromaStore:
     def _path(self,index_id):
         return self.bundles._path(index_id,namespace='vectors',error_code='chroma_path_invalid')
 
+    @cached_query_resource
     def _prepare(self,bundle_id):
         bundle=self.bundles.load(bundle_id);result=bundle_encoding(bundle)
         policy=dict(schema_version=1,bundle_id=bundle_id,collection_name=self.config.collection_name,

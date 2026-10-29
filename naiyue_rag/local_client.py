@@ -47,8 +47,20 @@ class LocalClient:
         return raw
 
     def request(self,operation,data):
-        if operation not in ('documents','ingest','query'):raise LocalServiceError('service_invalid_request')
+        if operation not in ('documents','document','ingest','remove','query'):raise LocalServiceError('service_invalid_request')
+        if operation=='query':
+            network=self.settings.service.request_timeout_seconds
+            timeout=httpx.Timeout(network,read=self.settings.retrieval.request_timeout_seconds+network)
+            return self._request('POST','/v1/query',data,timeout=timeout)
         return self._request('POST','/v1/'+operation,data)
+
+    def status(self):
+        raw=self._request('GET','/v1/status')
+        if set(raw)!={'closed','executing','queued','draining'} or type(raw['closed']) is not bool or \
+                any(type(raw[key]) is not int or raw[key]<0 for key in ('executing','queued','draining')) or \
+                raw['draining']>raw['executing']:
+            raise LocalServiceError('service_invalid_response')
+        return raw
 
     def close(self):self._client.close()
     def __enter__(self):return self
